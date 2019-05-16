@@ -5,68 +5,61 @@
 
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)
+    , m_currentFile             ("")
+    , m_destinationPath         ("")
+    , m_fileDir                 ("")
+    , m_loadingWindow           (std::make_shared <LoadingWindow>())
+    , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
+    , m_removeOriginalFiles     ("false")
+    , m_thread                  (std::make_shared<Thread> ())
+    , m_ui                      (std::make_shared<Ui::MainWindow> ())
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
     initModelTableView();
     initActions();
-
-    //this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
-
-    settings_destination_path = "";
-    add_file_last_dir = "";
-    settings_remove_original_files = "false";
     loadSettings();
-    current_file = "";
-
-    //init wait_window
-    wait_window = new WaitWindow();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
-    delete model;
-    delete wait_window;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
-    qDebug()<<ui->menuBar->y();
-    qDebug()<<ui->menuBar->height();
-    ui->tableView->setGeometry(5,5,this->width()-10, this->height()-(15 + ui->encryptButton->height() + ui->menuBar->height()));
-    ui->addButton->setGeometry(5,ui->tableView->y() + ui->tableView->height() + 5, ui->addButton->width(), ui->addButton->height());
-    ui->decryptButton->setGeometry(this->width()-(ui->decryptButton->width()+5), ui->addButton->y(), ui->decryptButton->width(), ui->decryptButton->height());
-    ui->encryptButton->setGeometry(ui->decryptButton->x() - (ui->encryptButton->width()+5), ui->addButton->y(), ui->decryptButton->width(), ui->decryptButton->height());
-    ui->removeButton->setGeometry(ui->addButton->x() + ui->addButton->width() + 5, ui->addButton->y(), ui->removeButton->width(), ui->removeButton->height());
-    //if (ui->tableView->)
-    ui->removeAllButton->setGeometry(ui->removeButton->x() + ui->removeButton->width() + 5, ui->addButton->y(), ui->removeAllButton->width(), ui->removeAllButton->height());
-    ui->tableView->setColumnWidth(0,ui->tableView->width());
+    qDebug()<<m_ui->menuBar->y();
+    qDebug()<<m_ui->menuBar->height();
+    m_ui->tableView->setGeometry(5,5,this->width()-10, this->height()-(15 + m_ui->encryptButton->height() + m_ui->menuBar->height()));
+    m_ui->addButton->setGeometry(5,m_ui->tableView->y() + m_ui->tableView->height() + 5, m_ui->addButton->width(), m_ui->addButton->height());
+    m_ui->decryptButton->setGeometry(this->width()-(m_ui->decryptButton->width()+5), m_ui->addButton->y(), m_ui->decryptButton->width(), m_ui->decryptButton->height());
+    m_ui->encryptButton->setGeometry(m_ui->decryptButton->x() - (m_ui->encryptButton->width()+5), m_ui->addButton->y(), m_ui->decryptButton->width(), m_ui->decryptButton->height());
+    m_ui->removeButton->setGeometry(m_ui->addButton->x() + m_ui->addButton->width() + 5, m_ui->addButton->y(), m_ui->removeButton->width(), m_ui->removeButton->height());
+    //if (m_ui->tableView->)
+    m_ui->removeAllButton->setGeometry(m_ui->removeButton->x() + m_ui->removeButton->width() + 5, m_ui->addButton->y(), m_ui->removeAllButton->width(), m_ui->removeAllButton->height());
+    m_ui->tableView->setColumnWidth(0,m_ui->tableView->width());
 }
 
 void MainWindow::initModelTableView()
 {
-    model = new QStandardItemModel(0,1,this);
-    model->setHorizontalHeaderItem(0, new QStandardItem(QString("File path")));
-    ui->tableView->setModel(model);
+    m_model->setHorizontalHeaderItem(0, new QStandardItem(QString("File path")));
+    m_ui->tableView->setModel(m_model.get());
 }
 
 void MainWindow::initActions()
 {
-    ui->actionOpen->setShortcut(QKeySequence::New);
-    ui->actionSave->setShortcut(QKeySequence::Save);
-    ui->actionSaveAs->setShortcut(QKeySequence::SaveAs);
-    ui->actionExit->setShortcut(QKeySequence::Quit);
+    m_ui->actionOpen->setShortcut(QKeySequence::New);
+    m_ui->actionSave->setShortcut(QKeySequence::Save);
+    m_ui->actionSaveAs->setShortcut(QKeySequence::SaveAs);
+    m_ui->actionExit->setShortcut(QKeySequence::Quit);
 
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(menu_open()));
-    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(menu_save()));
-    connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(menu_saveAs()));
-    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(menu_exit()));
-    connect(ui->actionSet_Destination, SIGNAL(triggered()), this, SLOT(menu_setDestination()));
-    connect(ui->actionRemove_original_files_after_encrypt, SIGNAL(toggled(bool)), this, SLOT(menu_removeOriginalFilesAfterEncrypt(bool)));
-    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(menu_about()));
+    connect(m_ui->actionOpen, SIGNAL(triggered()), this, SLOT(menu_open()));
+    connect(m_ui->actionSave, SIGNAL(triggered()), this, SLOT(menu_save()));
+    connect(m_ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(menu_saveAs()));
+    connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(menu_exit()));
+    connect(m_ui->actionSet_Destination, SIGNAL(triggered()), this, SLOT(menu_setDestination()));
+    connect(m_ui->actionRemove_original_files_after_encrypt, SIGNAL(toggled(bool)), this, SLOT(menu_removeOriginalFilesAfterEncrypt(const bool)));
+    connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(menu_about()));
 }
 
 void MainWindow::menu_open()
@@ -84,7 +77,7 @@ void MainWindow::menu_open()
           file.close();
           return;
       }
-      current_file = filepath;
+      m_currentFile = filepath;
       while(!in.atEnd())
       {
         QString line = in.readLine();
@@ -102,20 +95,20 @@ void MainWindow::menu_open()
 
 void MainWindow::menu_save()
 {
-    if (current_file == "")
+    if (m_currentFile == "")
         saveDialog();
     else
     {
-        QFile file(current_file);
+        QFile file(m_currentFile);
         if ( file.open(QIODevice::ReadWrite) )
         {
             QTextStream stream( &file );
 
             QModelIndex mi;
             QVariant v;
-            for (int i=0; i<model->rowCount(); i++)
+            for (int i=0; i<m_model->rowCount(); i++)
             {
-                mi = model->index(i,0);
+                mi = m_model->index(i,0);
                 v=mi.data();
 
                 stream<<v.toString() + "\n";
@@ -138,21 +131,21 @@ void MainWindow::menu_exit()
 void MainWindow::menu_setDestination()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Choose Or Create Directory"),
-                                                             settings_destination_path,
+                                                             m_destinationPath,
                                                                QFileDialog::DontResolveSymlinks | QFileDialog::ReadOnly);
     if (path!="")
     {
-        settings_destination_path = path;
+        m_destinationPath = path;
         saveSettings();
     }
 }
 
-void MainWindow::menu_removeOriginalFilesAfterEncrypt(bool checked)
+void MainWindow::menu_removeOriginalFilesAfterEncrypt(const bool checked)
 {
     if (checked)
-        settings_remove_original_files = "true";
+        m_removeOriginalFiles = "true";
     else
-        settings_remove_original_files = "false";
+        m_removeOriginalFiles = "false";
 
     saveSettings();
 
@@ -165,13 +158,13 @@ void MainWindow::menu_about()
 
 void MainWindow::on_addButton_clicked()
 {
-    QStringList l_path = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),add_file_last_dir,tr("Files (*.*)"));
+    QStringList l_path = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),m_fileDir, tr("Files (*.*)"));
     if (l_path.size() == 0)
         return;
 
     QString afld_tmp = "";
     if (!getDirNameFromPath(l_path[0], afld_tmp))
-        add_file_last_dir = afld_tmp;
+        m_fileDir = afld_tmp;
 
     for (int i=0; i<l_path.size(); i++)
         addDataInTableView(l_path[i]);
@@ -180,14 +173,14 @@ void MainWindow::on_addButton_clicked()
 void MainWindow::on_removeButton_clicked()
 {
     //get selected rows
-    QModelIndexList indexes = ui->tableView->selectionModel()->selectedRows();
+    QModelIndexList indexes = m_ui->tableView->selectionModel()->selectedRows();
 
     qSort(indexes.begin(), indexes.end());
 
     //remove last index in list
     while (!indexes.isEmpty())
     {
-        model->removeRows(indexes.last().row(), 1);
+        m_model->removeRows(indexes.last().row(), 1);
         indexes.removeLast();
     }
 }
@@ -204,7 +197,9 @@ void MainWindow::on_encryptButton_clicked()
                                               "Password:", QLineEdit::Password,
                                               "", &ok);
     if (!ok)
+    {
         return;
+    }
 
     if (text.isEmpty())
     {
@@ -213,7 +208,7 @@ void MainWindow::on_encryptButton_clicked()
         return;
     }
 
-    if (model->rowCount()==0)
+    if (m_model->rowCount()==0)
     {
                 QMessageBox::information(0,"", "Please add some file(s) to encrypt!");
                 return;
@@ -225,20 +220,20 @@ void MainWindow::on_encryptButton_clicked()
     deleteEncryptionFileNameList();
 
     //check for exist path
-    for (int i=0; i<model->rowCount(); i++)
+    for (int i=0; i<m_model->rowCount(); i++)
     {
-        mi = model->index(i,0);
+        mi = m_model->index(i,0);
         v=mi.data();
         QString file_name;
         getFileNameFromPath(v.toString(),file_name);
-        QString dest_path = settings_destination_path + "/" + file_name;
+        QString dest_path = m_destinationPath + "/" + file_name;
 
         if (dest_path == v.toString())
             dest_path += "_en";
 
 
-        l_source_files.push_back(new QString(v.toString()));
-        l_destination_files.push_back(new QString (dest_path));
+        m_sourceFiles.push_back(std::make_shared<QString>(v.toString()));
+        m_destinationFiles.push_back(std::make_shared<QString> (dest_path));
         //encryptFile(v.toString().toLatin1().data(),dest_path.toLatin1().data(),text.toLatin1().data());
     }
     newThread(text,true);
@@ -254,17 +249,21 @@ void MainWindow::on_decryptButton_clicked()
                                               "Password:", QLineEdit::Password,
                                               "", &ok);
     if (!ok)
+    {
         return;
+    }
+
     if (text.isEmpty())
     {
         QMessageBox::information(0,"","The password field cannot be empty!");
         on_decryptButton_clicked();
         return;
     }
-    if (model->rowCount()==0)
+
+    if (m_model->rowCount()==0)
     {
-                QMessageBox::information(0,"", "Please add some file(s) to dectypt!");
-                return;
+        QMessageBox::information(0,"", "Please add some file(s) to dectypt!");
+        return;
     }
 
     QModelIndex mi;
@@ -273,45 +272,43 @@ void MainWindow::on_decryptButton_clicked()
     deleteEncryptionFileNameList();
 
     //check for exist path
-    for (int i=0; i<model->rowCount(); i++)
+    for (int i=0; i<m_model->rowCount(); i++)
     {
-        mi = model->index(i,0);
+        mi = m_model->index(i,0);
         v=mi.data();
         QString file_name;
         getFileNameFromPath(v.toString(),file_name);
-        QString dest_path = settings_destination_path + "/" + file_name;
+        QString dest_path = m_destinationPath + "/" + file_name;
         if (dest_path == v.toString())
             dest_path += "_de";
 
-        l_source_files.push_back(new QString(v.toString()));
-        l_destination_files.push_back(new QString(dest_path));
+        m_sourceFiles.push_back(std::make_shared<QString>(v.toString()));
+        m_destinationFiles.push_back(std::make_shared<QString>(dest_path));
         //decryptFile(v.toString().toLatin1().data(),dest_path.toLatin1().data(),text.toLatin1().data());
     }
     newThread(text, false);
 }
 
 //add data to tableView widget
-void MainWindow::addDataInTableView(QString file_name)
+void MainWindow::addDataInTableView(const QString &fileName)
 {
-
     //check for existing file_name in tableView
     QModelIndex mi;
     QVariant v;
-    for (int i=0; i<model->rowCount(); i++)
+    for (int i=0; i<m_model->rowCount(); i++)
     {
-        mi = model->index(i,0);
+        mi = m_model->index(i,0);
         v=mi.data();
-        if (v.toString() == file_name)
+        if (v.toString() == fileName)
             return;
     }
 
     //Add file_name to tableView
-    model->setRowCount(model->rowCount()+1);
-    model->setData(model->index(model->rowCount()-1,0),file_name);
+    m_model->setRowCount(m_model->rowCount()+1);
+    m_model->setData(m_model->index(m_model->rowCount()-1,0),fileName);
 
     //set data not editable
-    model->item(model->rowCount()-1,0)->setEditable(false);
-
+    m_model->item(m_model->rowCount()-1,0)->setEditable(false);
 }
 
 void MainWindow::loadSettings()
@@ -340,8 +337,8 @@ void MainWindow::loadSettings()
         file.close();
         return;
     }
-    settings_destination_path = sl.at(1);
-    settings_destination_path = settings_destination_path.replace("\n","");
+    m_destinationPath = sl.at(1);
+    m_destinationPath = m_destinationPath.replace("\n","");
 
     if (in.atEnd())
     {
@@ -366,14 +363,18 @@ void MainWindow::loadSettings()
 
     if (sl.at(1)=="false" || sl.at(1) == "true")
     {
-        settings_remove_original_files = sl.at(1);
-        //settings_remove_original_files = settings_remove_original_files.replace("\n","");
+        m_removeOriginalFiles = sl.at(1);
+        //m_removeOriginalFiles = m_removeOriginalFiles.replace("\n","");
     }
 
-    if (settings_remove_original_files == "true")
-        ui->actionRemove_original_files_after_encrypt->setChecked(1);
+    if (m_removeOriginalFiles == "true")
+    {
+        m_ui->actionRemove_original_files_after_encrypt->setChecked(1);
+    }
     else
-        ui->actionRemove_original_files_after_encrypt->setChecked(0);
+    {
+        m_ui->actionRemove_original_files_after_encrypt->setChecked(0);
+    }
 
     file.close();
 }
@@ -385,11 +386,15 @@ void MainWindow::saveSettings()
     {
         QTextStream stream( &file );
 
-        stream<<"dist_path:" + settings_destination_path + "\n";
-        if (settings_remove_original_files == "true")
+        stream<<"dist_path:" + m_destinationPath + "\n";
+        if (m_removeOriginalFiles == "true")
+        {
             stream<<"remove_original_files:true\n";
+        }
         else
+        {
             stream<<"remove_original_files:false\n";
+        }
     }
     file.close();
 }
@@ -397,18 +402,18 @@ void MainWindow::saveSettings()
 void MainWindow::encryptFile(const char *in,const char *out,const char *passPhrase)
 {
 
-    CryptoPP::FileSource f(in, true, new CryptoPP::DefaultEncryptorWithMAC(passPhrase,
-   new CryptoPP::FileSink(out)));
+    //ToDo: uncoment this when criptoPP libs are available
+    //CryptoPP::FileSource f(in, true, new CryptoPP::DefaultEncryptorWithMAC(passPhrase,
+    //new CryptoPP::FileSink(out)));
 }
 
 void MainWindow::decryptFile(const char *in,const char *out,const char *passPhrase)
 {
-
-    CryptoPP::FileSource f(in, true,
-   new CryptoPP::DefaultDecryptorWithMAC(passPhrase, new CryptoPP::FileSink(out)));
+    //CryptoPP::FileSource f(in, true,
+    //new CryptoPP::DefaultDecryptorWithMAC(passPhrase, new CryptoPP::FileSink(out)));
 }
 
-int MainWindow::getDirNameFromPath(QString path, QString &dirname)
+int MainWindow::getDirNameFromPath(const QString &path, QString &dirname)
 {
     QString separator;
     separator = "/";
@@ -432,29 +437,28 @@ int MainWindow::getDirNameFromPath(QString path, QString &dirname)
     return 0;
 }
 
-void MainWindow::newThread(QString password, bool encryption)
+void MainWindow::newThread(const QString &password, const bool isDecrypted)
 {
-    thread = new Thread();
-    connect(thread, SIGNAL(processFinished(bool)),this, SLOT(on_processFinished(bool)));
-    connect(thread, SIGNAL(setLabel(QString)),wait_window,SLOT(on_setLable(QString)));
-    thread->setSourceDestionationFiles(l_source_files, l_destination_files);
-    thread->setPassword(password);
-    thread->isEncrypt(encryption);
-    thread->start();
-    //wait_window->show();
+    connect(m_thread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
+    connect(m_thread.get(), SIGNAL(setLabel(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
+    m_thread->setSourceDestionationFiles(m_sourceFiles, m_destinationFiles);
+    m_thread->setPassword(password);
+    m_thread->setIsDecrypted(isDecrypted);
+    m_thread->start();
+    //m_loadingWindow->show();
 
-    wait_window->move(((this->geometry().x() + this->width()/2) - wait_window->width()/2),
-                ((this->geometry().y() + this->height()/2) - wait_window->height()/2));
-    //wait_window->setParent(this);
+    m_loadingWindow->move(((this->geometry().x() + this->width()/2) - m_loadingWindow->width()/2),
+                ((this->geometry().y() + this->height()/2) - m_loadingWindow->height()/2));
+
     this->setEnabled(false);
-    wait_window->show();
+    m_loadingWindow->show();
 }
 
-void MainWindow::on_processFinished(bool encrypt)
+void MainWindow::on_processFinished(const bool encrypt)
 {
     this->setEnabled(true);
-    wait_window->close();
-    thread->deleteLater();
+    m_loadingWindow->close();
+    m_thread->deleteLater();
     if (encrypt)
     {
         QMessageBox::StandardButton reply;
@@ -469,28 +473,30 @@ void MainWindow::on_processFinished(bool encrypt)
             {
                 QTextStream stream(&file);
 
-                for (int i=0; i<l_destination_files.size(); i++)
-                    stream<<*l_destination_files[i] + "\n";
+                for (int i=0; i<m_destinationFiles.size(); i++)
+                    stream<<*m_destinationFiles[i] + "\n";
             }
             file.close();
         }
     }
     else
+    {
         QMessageBox::information(this,"","Decryption has been completed successfully.");
+    }
 }
 
 
-//'remove all' button
+//"remove all" button
 void MainWindow::on_removeAllButton_clicked()
 {
-    model->removeRows(0,model->rowCount());
+    m_model->removeRows(0,m_model->rowCount());
 }
 
 void MainWindow::saveDialog()
 {
     QString file_name = QFileDialog::getSaveFileName(this, tr("Save list of file(s)"),"",tr("*.lef (*.lef)"));
 
-    current_file = file_name;
+    m_currentFile = file_name;
     QFile file(file_name + ".lef");
     if ( file.open(QIODevice::ReadWrite) )
     {
@@ -498,9 +504,9 @@ void MainWindow::saveDialog()
 
         QModelIndex mi;
         QVariant v;
-        for (int i=0; i<model->rowCount(); i++)
+        for (int i=0; i<m_model->rowCount(); i++)
         {
-            mi = model->index(i,0);
+            mi = m_model->index(i,0);
             v=mi.data();
 
             stream<<v.toString() + "\n";
@@ -512,33 +518,36 @@ void MainWindow::saveDialog()
 
 void MainWindow::deleteEncryptionFileNameList()
 {
-    if (l_source_files.size() >0)
+    if (m_sourceFiles.size() >0)
     {
-        qDeleteAll(l_source_files);
-        l_source_files.clear();
+        m_sourceFiles.clear();
     }
-    if (l_destination_files.size() >0)
+    if (m_destinationFiles.size() >0)
     {
-        qDeleteAll(l_destination_files);
-        l_destination_files.clear();
+        m_destinationFiles.clear();
     }
 }
 
-int MainWindow::getFileNameFromPath(QString path, QString &filename)
+int MainWindow::getFileNameFromPath(const QString &path, QString &filename)
 {
     QString separator, filename_tmp ="";
     separator = "/";
 
     if (separator.length()<1)
+    {
         return 1;
+    }
 
     for (int i=path.length()-1; i>=0; i--)
     {
-
         if (path[i] == separator[0])
+        {
             break;
+        }
         if (i == 0) //if not found separator, return 1, mean error
+        {
             return 1;
+        }
         filename_tmp = path[i] + filename_tmp;
     }
     filename = filename_tmp;

@@ -1,32 +1,24 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QStandardItemModel>
-#include <QFileDialog>
-#include <QFile>
-#include <QDebug>
-#include <QMessageBox>
-#include <QStringList>
-#include <QDialog>
 #include <math.h>
+#include <memory>
+
+#include <QDebug>
+#include <QDialog>
+#include <QFile>
+#include <QFileDialog>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QStandardItemModel>
+#include <QStringList>
+
 #include "thread.h"
+#include "loadingwindow.h"
 
-/*
-#include <iostream>
-#include <cryptopp/files.h>
-#define CRYPTOPP_DEFAULT_NO_DLL
-#include <cryptopp/dll.h>
-#include <cryptopp/default.h>
-#ifdef CRYPTOPP_WIN32_AVAILABLE
-#include <windows.h>
-#endif
-*/
-
-#include "waitwindow.h"
-
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -36,52 +28,52 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
     void resizeEvent(QResizeEvent *event);
 
 private:
-    Ui::MainWindow *ui;
-    QStandardItemModel *model;
-    QString settings_destination_path;
-    QString settings_remove_original_files;
-    QString add_file_last_dir;
-    bool first_save;
-    QString current_file;
-    WaitWindow *wait_window;
-    Thread *thread;
-    QList<QString*> l_source_files;
-    QList<QString*> l_destination_files;
+    QString                                 m_currentFile;
+    QList<std::shared_ptr<QString>>         m_destinationFiles;
+    QString                                 m_destinationPath;
+    QString                                 m_fileDir;
+    std::shared_ptr<LoadingWindow>          m_loadingWindow;
+    std::shared_ptr<QStandardItemModel>     m_model;
+    QString                                 m_removeOriginalFiles;
+    QList<std::shared_ptr<QString>>         m_sourceFiles;
+    std::shared_ptr<Thread>                 m_thread;
+    std::shared_ptr<Ui::MainWindow>         m_ui;
 
+
+private:
+    void addDataInTableView(const QString &path);
+    void decryptFile(const char *in,const char *out, const char *passPhrase);
+    void deleteEncryptionFileNameList();
+    int  getDirNameFromPath  (const QString &path, QString &dirname);
+    int  getFileNameFromPath (const QString &path, QString &filename);
+    void encryptFile(const char *in,const char *out, const char *passPhrase);
     void initModelTableView();
     void initActions();
-    void addDataInTableView(QString path);
     void loadSettings();
-    void saveSettings();
+    void newThread(const QString &password, const bool isDecrypted);
     void saveDialog();
-    void deleteEncryptionFileNameList();
-    //void getFileNameFromPath(QString path, QString &filename);
-    void encryptFile(const char *in,const char *out,const char *passPhrase);
-    void decryptFile(const char *in,const char *out,const char *passPhrase);
-
-    int getFileNameFromPath(QString path, QString &filename);
-    int getDirNameFromPath(QString path, QString &dirname);
-
-    void newThread(QString password, bool encryption);
+    void saveSettings();
 
 public slots:
-    void on_processFinished(bool encrypt);
+    void on_processFinished(const bool encrypt);
 
 private slots:
+    void menu_about();
+    void menu_exit();
     void menu_open();
+    void menu_removeOriginalFilesAfterEncrypt(const bool);
     void menu_save();
     void menu_saveAs();
-    void menu_exit();
     void menu_setDestination();
-    void menu_removeOriginalFilesAfterEncrypt(bool);
-    void menu_about();
+
     void on_addButton_clicked();
-    void on_removeButton_clicked();
-    void on_encryptButton_clicked();
     void on_decryptButton_clicked();
+    void on_encryptButton_clicked();
+    void on_removeButton_clicked();
     void on_removeAllButton_clicked();
 };
 

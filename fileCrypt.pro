@@ -8,20 +8,21 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += c++11
 TARGET = fileCrypt
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    waitwindow.cpp \
-    thread.cpp
+    thread.cpp \
+    loadingwindow.cpp
 
 HEADERS  += mainwindow.h \
-    waitwindow.h \
-    thread.h
+    thread.h \
+    loadingwindow.h
 
 FORMS    += mainwindow.ui \
-    waitwindow.ui
+    loadingwindow.ui
 
-LIBS += -lcryptopp
+#LIBS += -lcryptopp #ToDo: uncoment this row, when cryptopp is available
