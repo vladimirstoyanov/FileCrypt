@@ -25,4 +25,4 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     loadingwindow.ui
 
-#LIBS += -lcryptopp #ToDo: uncoment this row, when cryptopp is available
+LIBS += -lcryptopp

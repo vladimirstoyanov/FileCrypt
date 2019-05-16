@@ -58,14 +58,12 @@ void Thread::setPassword(const QString &password)
 
 void Thread::encryptFile(const char *in,const char *out,const char *passPhrase)
 {
-    //ToDo: uncoment this when criptoPP libs are available
-    //CryptoPP::FileSource f(in, true, new CryptoPP::DefaultEncryptorWithMAC(passPhrase,
-    //new CryptoPP::FileSink(out)));
+    CryptoPP::FileSource f(in, true, new CryptoPP::DefaultEncryptorWithMAC(passPhrase,
+    new CryptoPP::FileSink(out)));
 }
 
 void Thread::decryptFile(const char *in,const char *out,const char *passPhrase)
 {
-    //ToDo: uncoment this when criptoPP libs are available
-    //CryptoPP::FileSource f(in, true,
-    //new CryptoPP::DefaultDecryptorWithMAC(passPhrase, new CryptoPP::FileSink(out)));
+    CryptoPP::FileSource f(in, true,
+    new CryptoPP::DefaultDecryptorWithMAC(passPhrase, new CryptoPP::FileSink(out)));
 }

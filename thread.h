@@ -7,12 +7,10 @@
 #include <QDebug>
 
 #include <memory>
-//ToDo: uncomment below include
-//#include <cryptopp/files.h>
+#include <cryptopp/files.h>
 #define CRYPTOPP_DEFAULT_NO_DLL
-//ToDo: uncomment below includes
-//#include <cryptopp/dll.h>
-//#include <cryptopp/default.h>
+#include <cryptopp/dll.h>
+#include <cryptopp/default.h>
 #ifdef CRYPTOPP_WIN32_AVAILABLE
 #include <windows.h>
 #endif
