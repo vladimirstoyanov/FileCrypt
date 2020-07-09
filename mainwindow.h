@@ -46,15 +46,14 @@ private:
 
 private:
     void addDataInTableView(const QString &path);
-    void decryptFile(const char *in,const char *out, const char *passPhrase);
     void deleteEncryptionFileNameList();
-    int  getDirNameFromPath  (const QString &path, QString &dirname);
-    int  getFileNameFromPath (const QString &path, QString &filename);
-    void encryptFile(const char *in,const char *out, const char *passPhrase);
+    int  getDirNameByPath  (const QString &path, QString &dirname);
+    int  getFileNameByPath (const QString &path, QString &filename);
     void initModelTableView();
     void initActions();
+    void initThread ();
     void loadSettings();
-    void newThread(const QString &password, const bool isDecrypted);
+    void createThread(const QString &password, const bool isDecrypted);
     void saveDialog();
     void saveSettings();
 

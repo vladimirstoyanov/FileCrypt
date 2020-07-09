@@ -14,15 +14,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    aes.cpp \
         mainwindow.cpp \
     thread.cpp \
     loadingwindow.cpp
 
 HEADERS  += mainwindow.h \
+    aes.h \
     thread.h \
     loadingwindow.h
 
 FORMS    += mainwindow.ui \
     loadingwindow.ui
-
-LIBS += -lcryptopp

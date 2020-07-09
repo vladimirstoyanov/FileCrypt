@@ -1,30 +1,30 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include <QThread>
+#include <QCryptographicHash>
+#include <QDebug>
 #include <QMessageBox>
 #include <QList>
-#include <QDebug>
+#include <QThread>
 
+#include <fstream>
 #include <memory>
-#include <cryptopp/files.h>
-#define CRYPTOPP_DEFAULT_NO_DLL
-#include <cryptopp/dll.h>
-#include <cryptopp/default.h>
-#ifdef CRYPTOPP_WIN32_AVAILABLE
-#include <windows.h>
-#endif
+#include <vector>
+
+#include <QFile>
 
 class Thread : public QThread
 {
     Q_OBJECT
 public:
     explicit Thread(QObject *parent = 0);
+    virtual  ~Thread ();
 
     void run();
     void setIsDecrypted(const bool isDecrypted);
     void setPassword(const QString &password);
-    void setSourceDestionationFiles(const QList<std::shared_ptr<QString>> &source, const QList<std::shared_ptr<QString>> &destination);
+    void setSourceDestionationFiles(const QList<std::shared_ptr<QString>> &source,
+                                    const QList<std::shared_ptr<QString>> &destination);
 
 private:
     QList<std::shared_ptr<QString>> m_destinationFiles;
@@ -33,8 +33,10 @@ private:
     QList<std::shared_ptr<QString>> m_sourceFiles;
 
 private:
-    void encryptFile(const char *in, const char *out, const char *passPhrase);
-    void decryptFile(const char *in, const char *out, const char *passPhrase);
+    void encryptFile(const QString &inFile, const QString &outFile, const QString &key);
+    void decryptFile(const QString &inFile, const QString &outFile, const QString &key);
+    void readFile (const std::string &filename, std::vector<char> &buffer, size_t &size);
+    void writeFile (const QString &filename, const QByteArray &buffer);
 
 signals:
     void processFinished(const bool);

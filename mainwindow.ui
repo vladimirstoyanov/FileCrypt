@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>FileCrypt 0.1</string>
+   <string>FileCrypt</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="addButton">
@@ -79,7 +79,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Remove</string>
+     <string>Clear</string>
     </property>
    </widget>
    <widget class="QPushButton" name="removeAllButton">
@@ -92,7 +92,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Remove All</string>
+     <string>Clear All</string>
     </property>
    </widget>
   </widget>
@@ -102,7 +102,7 @@
      <x>0</x>
      <y>0</y>
      <width>430</width>
-     <height>20</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

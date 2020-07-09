@@ -1,3 +1,4 @@
+#include "aes.h"
 #include "thread.h"
 
 Thread::Thread(QObject *parent) :
@@ -5,6 +6,12 @@ Thread::Thread(QObject *parent) :
     , m_decrypted(false)
     , m_password ("")
 {
+    this->setTerminationEnabled(true);
+}
+
+Thread::~Thread ()
+{
+
 }
 
 void Thread::setSourceDestionationFiles(const QList<std::shared_ptr<QString> > &source, const QList<std::shared_ptr<QString> > &destination)
@@ -20,7 +27,7 @@ void Thread::setIsDecrypted(const bool isDecrypted)
 
 void Thread::run()
 {
-    qDebug()<<__PRETTY_FUNCTION__;
+    qDebug()<<__PRETTY_FUNCTION__<<this->currentThreadId();
 
     if (m_sourceFiles.size()!=m_destinationFiles.size())
     {
@@ -31,11 +38,10 @@ void Thread::run()
 
     if (m_decrypted)
     {
-        //encryptFile(v.toString().toLatin1().data(),dest_path.toLatin1().data(),text.toLatin1().data());
         for (int i = 0; i< m_sourceFiles.size(); i++)
         {
             emit setLabel("Encrypt: " + *m_sourceFiles[i]);
-            encryptFile(m_sourceFiles[i]->toLatin1().data(), m_destinationFiles[i]->toLatin1().data(), m_password.toLatin1().data());
+            encryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
         }
     }
     else
@@ -43,7 +49,7 @@ void Thread::run()
         for (int i = 0; i<m_sourceFiles.size(); i++)
         {
             emit setLabel("Decrypt: " + *m_sourceFiles[i]);
-            decryptFile(m_sourceFiles[i]->toLatin1().data(), m_destinationFiles[i]->toLatin1().data(), m_password.toLatin1().data());
+            decryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
         }
     }
 
@@ -56,14 +62,73 @@ void Thread::setPassword(const QString &password)
     this->m_password = password;
 }
 
-void Thread::encryptFile(const char *in,const char *out,const char *passPhrase)
+void Thread::readFile (const std::string &filename, std::vector<char> &buffer, size_t &size)
 {
-    CryptoPP::FileSource f(in, true, new CryptoPP::DefaultEncryptorWithMAC(passPhrase,
-    new CryptoPP::FileSink(out)));
+    /*
+
+
+    // copies all data into buffer
+    buffer(std::istreambuf_iterator<char>(input), {});
+    size = buffer.size();
+    */
+}
+void Thread::writeFile (const QString &filename, const QByteArray &buffer)
+{
+    //write the new file
+    //auto myfile = std::fstream(filename, std::ios::out | std::ios::binary);
+    //myfile.write((char*)buffer, size);
+    //myfile.close();
+    QFile outFile(filename);
+    if (!outFile.open(QIODevice::WriteOnly)) {
+            qDebug() << "can't open outFile";
+            return;
+    }
+    outFile.write(buffer);
+    outFile.close();
 }
 
-void Thread::decryptFile(const char *in,const char *out,const char *passPhrase)
+void Thread::encryptFile(const QString &inFile, const QString &outFile, const QString &key)
 {
-    CryptoPP::FileSource f(in, true,
-    new CryptoPP::DefaultDecryptorWithMAC(passPhrase, new CryptoPP::FileSink(out)));
+    //read
+    QFile CurrentFile(inFile);
+    if(!CurrentFile.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+    QByteArray fileData = CurrentFile.readAll();
+
+    //ecrypt
+    QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
+
+    QString iv("your-IV-vector");
+
+    QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
+    QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
+
+    QByteArray encodedText = encryption.encode(fileData, hashKey, hashIV);
+
+
+    //write
+    writeFile (outFile, encodedText);
+}
+
+void Thread::decryptFile(const QString &inFile, const QString &outFile, const QString &key)
+{
+    QFile CurrentFile(inFile);
+    if(!CurrentFile.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+    QByteArray fileData = CurrentFile.readAll();
+
+    QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
+
+    QString iv("your-IV-vector");
+
+    QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
+    QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
+
+    QByteArray decodedText = encryption.decode(fileData, hashKey, hashIV);
+
+    writeFile (outFile, decodedText);
 }
