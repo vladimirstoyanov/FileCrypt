@@ -1,8 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QInputDialog>
-#include <QApplication>
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -16,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
 {
     m_ui->setupUi(this);
+    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
     initModelTableView();
     initActions();
     initThread();
@@ -30,8 +28,6 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
-    qDebug()<<m_ui->menuBar->y();
-    qDebug()<<m_ui->menuBar->height();
     m_ui->tableView->setGeometry(5,5,this->width()-10, this->height()-(15 + m_ui->encryptButton->height() + m_ui->menuBar->height()));
     m_ui->addButton->setGeometry(5,m_ui->tableView->y() + m_ui->tableView->height() + 5, m_ui->addButton->width(), m_ui->addButton->height());
     m_ui->decryptButton->setGeometry(this->width()-(m_ui->decryptButton->width()+5), m_ui->addButton->y(), m_ui->decryptButton->width(), m_ui->decryptButton->height());

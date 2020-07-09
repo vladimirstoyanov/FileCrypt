@@ -72,12 +72,9 @@ void Thread::readFile (const std::string &filename, std::vector<char> &buffer, s
     size = buffer.size();
     */
 }
+
 void Thread::writeFile (const QString &filename, const QByteArray &buffer)
 {
-    //write the new file
-    //auto myfile = std::fstream(filename, std::ios::out | std::ios::binary);
-    //myfile.write((char*)buffer, size);
-    //myfile.close();
     QFile outFile(filename);
     if (!outFile.open(QIODevice::WriteOnly)) {
             qDebug() << "can't open outFile";
@@ -114,6 +111,7 @@ void Thread::encryptFile(const QString &inFile, const QString &outFile, const QS
 
 void Thread::decryptFile(const QString &inFile, const QString &outFile, const QString &key)
 {
+    //read file
     QFile CurrentFile(inFile);
     if(!CurrentFile.open(QIODevice::ReadOnly))
     {
@@ -121,6 +119,7 @@ void Thread::decryptFile(const QString &inFile, const QString &outFile, const QS
     }
     QByteArray fileData = CurrentFile.readAll();
 
+    //decrypt file data
     QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
 
     QString iv("your-IV-vector");
@@ -130,5 +129,6 @@ void Thread::decryptFile(const QString &inFile, const QString &outFile, const QS
 
     QByteArray decodedText = encryption.decode(fileData, hashKey, hashIV);
 
+    //write
     writeFile (outFile, decodedText);
 }

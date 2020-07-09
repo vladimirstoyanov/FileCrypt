@@ -3,12 +3,14 @@
 
 #include <memory>
 
-#include <QWidget>
+#include <QApplication>
 #include <QDebug>
-#include <QMovie>
+#include <QDesktopWidget>
 #include <QLabel>
+#include <QMovie>
 #include <QPainter>
 #include <QPen>
+#include <QWidget>
 
 namespace Ui
 {

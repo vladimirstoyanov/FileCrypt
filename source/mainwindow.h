@@ -4,10 +4,13 @@
 #include <math.h>
 #include <memory>
 
+#include <QApplication>
 #include <QDebug>
 #include <QDialog>
+#include <QDesktopWidget>
 #include <QFile>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QStandardItemModel>

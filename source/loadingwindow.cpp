@@ -13,6 +13,8 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
     setWindowFlags( Qt::CustomizeWindowHint );
     setWindowFlags(windowFlags() | Qt::Tool);
 
+    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
+
     m_label->setGeometry(5,35,this->width()-10, m_label->height());
 
     //init waiting gif animation
