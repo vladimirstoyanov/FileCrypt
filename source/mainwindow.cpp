@@ -3,6 +3,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
+    , m_aboutWindow             (std::make_shared <AboutWindow>())
     , m_currentFile             ("")
     , m_destinationPath         ("")
     , m_fileDir                 ("")
@@ -164,7 +165,7 @@ void MainWindow::menu_removeOriginalFilesAfterEncrypt(const bool checked)
 
 void MainWindow::menu_about()
 {
-    QMessageBox::critical(NULL,"","about");
+    m_aboutWindow->show();
 }
 
 void MainWindow::on_addButton_clicked()

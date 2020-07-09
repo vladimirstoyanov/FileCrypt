@@ -16,8 +16,10 @@
 #include <QStandardItemModel>
 #include <QStringList>
 
+#include "aboutwindow.h"
 #include "thread.h"
 #include "loadingwindow.h"
+
 
 namespace Ui
 {
@@ -35,6 +37,7 @@ public:
     void resizeEvent(QResizeEvent *event);
 
 private:
+    std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
     QList<std::shared_ptr<QString>>         m_destinationFiles;
     QString                                 m_destinationPath;

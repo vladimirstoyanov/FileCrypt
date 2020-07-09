@@ -14,15 +14,18 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    aboutwindow.cpp \
     aes.cpp \
-        mainwindow.cpp \
+    mainwindow.cpp \
     thread.cpp \
     loadingwindow.cpp
 
 HEADERS  += mainwindow.h \
+    aboutwindow.h \
     aes.h \
     thread.h \
     loadingwindow.h
 
 FORMS    += mainwindow.ui \
+    aboutwindow.ui \
     loadingwindow.ui

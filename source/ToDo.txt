@@ -1,4 +1,3 @@
-- There isn't a good description related to "about" window;
 - "Add file" doesn't detect files without extensions;
 - add percentages of encryption/decryption progress; - 1000pt
 - add different types of encryption - 1000pt
