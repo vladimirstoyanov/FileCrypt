@@ -5,7 +5,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
     QWidget(parent)
     , m_loadingGif (std::make_shared<QLabel>(this))
     , m_label (std::make_shared<QLabel>(this))
-    , m_movie (std::make_shared<QMovie>("please_wait.gif"))
+    , m_movie (std::make_shared<QMovie>("../resources/wait.gif"))
     , m_ui(std::make_shared<Ui::LoadingWindow> ())
 {
     m_ui->setupUi(this);

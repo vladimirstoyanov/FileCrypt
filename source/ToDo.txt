@@ -1,3 +1,2 @@
 - There isn't a good description related to "about" window;
 - "Add file" doesn't detect files without extensions;
-- animation of loading windows doesn't work;
