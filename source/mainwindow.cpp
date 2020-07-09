@@ -170,7 +170,7 @@ void MainWindow::menu_about()
 
 void MainWindow::on_addButton_clicked()
 {
-    QStringList l_path = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),m_fileDir, tr("Files (*.*)"));
+    QStringList l_path = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),m_fileDir, tr("Files (*)"));
     if (l_path.size() == 0)
         return;
 
