@@ -14,7 +14,7 @@ fi
 cd $2
 
 rm -rf build-fileCrypt-Desktop-Debug/
-#rm *.pro.user
+rm source/*.pro.user
 
 echo "git add --all"
 git add --all
