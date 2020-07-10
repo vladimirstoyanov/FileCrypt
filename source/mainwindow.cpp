@@ -238,7 +238,7 @@ void MainWindow::on_encryptButton_clicked()
         v=mi.data();
         QString fileName;
         getFileNameByPath(v.toString(),fileName);
-        QString dest_path = m_destinationPath + "/" + fileName;
+        QString dest_path = m_destinationPath + fileName;
 
         if (dest_path == v.toString())
             dest_path += "_en";
@@ -289,7 +289,7 @@ void MainWindow::on_decryptButton_clicked()
         v=mi.data();
         QString file_name;
         getFileNameByPath(v.toString(),file_name);
-        QString dest_path = m_destinationPath + "/" + file_name;
+        QString dest_path = m_destinationPath + file_name;
         if (dest_path == v.toString())
             dest_path += "_de";
 
@@ -326,7 +326,9 @@ void MainWindow::loadSettings()
 {
     QFile file("settings");
     if(!file.open(QIODevice::ReadOnly))
+    {
         return;
+    }
 
     QTextStream in(&file);
 
@@ -349,6 +351,7 @@ void MainWindow::loadSettings()
         return;
     }
     m_destinationPath = sl.at(1);
+
     m_destinationPath = m_destinationPath.replace("\n","");
 
     if (in.atEnd())
