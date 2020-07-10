@@ -16,6 +16,7 @@
 #include <QStandardItemModel>
 #include <QStringList>
 
+#include "aes.h"
 #include "aboutwindow.h"
 #include "thread.h"
 #include "loadingwindow.h"
@@ -37,6 +38,7 @@ public:
     void resizeEvent(QResizeEvent *event);
 
 private:
+    std::shared_ptr<QAESEncryption>         m_aes;
     std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
     QList<std::shared_ptr<QString>>         m_destinationFiles;

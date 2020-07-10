@@ -1,8 +1,8 @@
-#include "aes.h"
 #include "thread.h"
 
-Thread::Thread(QObject *parent) :
+Thread::Thread(std::shared_ptr<QAESEncryption> aes, QObject *parent) :
     QThread(parent)
+    , m_aes(aes)
     , m_decrypted(false)
     , m_password ("")
 {
@@ -95,14 +95,14 @@ void Thread::encryptFile(const QString &inFile, const QString &outFile, const QS
     QByteArray fileData = CurrentFile.readAll();
 
     //ecrypt
-    QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
+    //QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
 
     QString iv("your-IV-vector");
 
     QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
     QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
 
-    QByteArray encodedText = encryption.encode(fileData, hashKey, hashIV);
+    QByteArray encodedText = m_aes->encode(fileData, hashKey, hashIV);
 
 
     //write
@@ -120,14 +120,14 @@ void Thread::decryptFile(const QString &inFile, const QString &outFile, const QS
     QByteArray fileData = CurrentFile.readAll();
 
     //decrypt file data
-    QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
+    //QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
 
     QString iv("your-IV-vector");
 
     QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
     QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
 
-    QByteArray decodedText = encryption.decode(fileData, hashKey, hashIV);
+    QByteArray decodedText = m_aes->decode(fileData, hashKey, hashIV);
 
     //write
     writeFile (outFile, decodedText);

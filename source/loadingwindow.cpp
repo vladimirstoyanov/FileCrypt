@@ -4,8 +4,9 @@
 LoadingWindow::LoadingWindow(QWidget *parent) :
     QWidget(parent)
     , m_loadingGif (std::make_shared<QLabel>(this))
-    , m_label (std::make_shared<QLabel>(this))
+    , m_filenameLabel (std::make_shared<QLabel>(this))
     , m_movie (std::make_shared<QMovie>("../resources/wait.gif"))
+    , m_percentageLabel (std::make_shared<QLabel>(this))
     , m_ui(std::make_shared<Ui::LoadingWindow> ())
 {
     m_ui->setupUi(this);
@@ -15,7 +16,13 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 
     this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
 
-    m_label->setGeometry(5,35,this->width()-10, m_label->height());
+    m_filenameLabel->setGeometry(5,35,this->width()-10, m_filenameLabel->height());
+    m_percentageLabel->setGeometry(m_filenameLabel->x(),
+                                   m_filenameLabel->y() + m_filenameLabel->height() + 5,
+                                   20,
+                                   m_percentageLabel->height());
+    m_filenameLabel->setStyleSheet("QLabel { background-color : white; color : black; }");
+    m_percentageLabel->setStyleSheet("QLabel { background-color : white; color : black; }");
 
     //init waiting gif animation
     m_loadingGif->setMovie(m_movie.get());
@@ -45,5 +52,10 @@ void LoadingWindow::paintEvent( QPaintEvent* e )
 
 void LoadingWindow::on_setLable(const QString &label)
 {
-    m_label->setText(label);
+    m_filenameLabel->setText(label);
+}
+
+void LoadingWindow::on_percentageUpdated(const int percentage)
+{
+    m_percentageLabel->setText(QString::number(percentage) + "%");
 }

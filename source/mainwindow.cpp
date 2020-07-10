@@ -3,6 +3,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
+    , m_aes                     (std::make_shared <QAESEncryption>(QAESEncryption::AES_256, QAESEncryption::CBC))
     , m_aboutWindow             (std::make_shared <AboutWindow>())
     , m_currentFile             ("")
     , m_destinationPath         ("")
@@ -10,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
     , m_removeOriginalFiles     ("false")
-    , m_thread                  (std::make_shared<Thread> ())
+    , m_thread                  (std::make_shared<Thread> (m_aes))
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
 {
     m_ui->setupUi(this);
@@ -64,6 +65,7 @@ void MainWindow::initThread()
 {
     connect(m_thread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
     connect(m_thread.get(), SIGNAL(setLabel(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
+    connect(m_aes.get(), SIGNAL(percentageUpdated(const int)),m_loadingWindow.get(),SLOT(on_percentageUpdated(const int)));
 }
 
 void MainWindow::menu_open()

@@ -537,6 +537,7 @@ QByteArray QAESEncryption::encode(const QByteArray &rawText, const QByteArray &k
         int percentage = 0;
         int oldPercentage = 0;
         double size_ = alignedText.size();
+        percentageUpdated(percentage);
         for(int i=0; i < alignedText.size(); i+= m_blocklen) {
             alignedText.replace(i, m_blocklen, byteXor(alignedText.mid(i, m_blocklen),ivTemp));
             ret.append(cipher(expandedKey, alignedText.mid(i, m_blocklen)));
@@ -546,8 +547,10 @@ QByteArray QAESEncryption::encode(const QByteArray &rawText, const QByteArray &k
             {
                 qDebug()<<percentage<<"%";
                 oldPercentage = percentage;
+                percentageUpdated(percentage);
             }
         }
+        percentageUpdated(100);
         return ret;
     }
     break;

@@ -3,6 +3,7 @@
 
 #include <QCryptographicHash>
 #include <QDebug>
+#include <QFile>
 #include <QMessageBox>
 #include <QList>
 #include <QThread>
@@ -11,13 +12,13 @@
 #include <memory>
 #include <vector>
 
-#include <QFile>
+#include "aes.h"
 
 class Thread : public QThread
 {
     Q_OBJECT
 public:
-    explicit Thread(QObject *parent = 0);
+    explicit Thread(std::shared_ptr<QAESEncryption>aes, QObject *parent = 0);
     virtual  ~Thread ();
 
     void run();
@@ -27,6 +28,7 @@ public:
                                     const QList<std::shared_ptr<QString>> &destination);
 
 private:
+    std::shared_ptr<QAESEncryption> m_aes;
     QList<std::shared_ptr<QString>> m_destinationFiles;
     bool                            m_decrypted;
     QString                         m_password;

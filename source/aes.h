@@ -51,7 +51,7 @@ public:
 
     QByteArray printArray(uchar *arr, int size);
 signals:
-
+    void percentageUpdated(const int percentage);
 public slots:
 
 private:

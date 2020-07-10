@@ -26,10 +26,12 @@ public:
     virtual ~LoadingWindow();
 public slots:
     void on_setLable(const QString &label);
+    void on_percentageUpdated (const int percentage);
 private:
     std::shared_ptr<QLabel>             m_loadingGif;
-    std::shared_ptr<QLabel>             m_label;
+    std::shared_ptr<QLabel>             m_filenameLabel;
     std::shared_ptr<QMovie>             m_movie;
+    std::shared_ptr<QLabel>             m_percentageLabel;
     std::shared_ptr<Ui::LoadingWindow>  m_ui;
 
     void paintEvent( QPaintEvent* e );
