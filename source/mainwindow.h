@@ -46,7 +46,6 @@ private:
     QString                                 m_fileDir;
     std::shared_ptr<LoadingWindow>          m_loadingWindow;
     std::shared_ptr<QStandardItemModel>     m_model;
-    QString                                 m_removeOriginalFiles;
     QList<std::shared_ptr<QString>>         m_sourceFiles;
     std::shared_ptr<Thread>                 m_thread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
@@ -74,7 +73,6 @@ private slots:
     void menu_about();
     void menu_exit();
     void menu_open();
-    void menu_removeOriginalFilesAfterEncrypt(const bool);
     void menu_save();
     void menu_saveAs();
     void menu_setDestination();

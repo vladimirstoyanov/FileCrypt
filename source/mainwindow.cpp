@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_fileDir                 ("")
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
-    , m_removeOriginalFiles     ("false")
     , m_thread                  (std::make_shared<Thread> (m_aes))
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
 {
@@ -57,7 +56,6 @@ void MainWindow::initActions()
     connect(m_ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(menu_saveAs()));
     connect(m_ui->actionExit, SIGNAL(triggered()), this, SLOT(menu_exit()));
     connect(m_ui->actionSet_Destination, SIGNAL(triggered()), this, SLOT(menu_setDestination()));
-    connect(m_ui->actionRemove_original_files_after_encrypt, SIGNAL(toggled(bool)), this, SLOT(menu_removeOriginalFilesAfterEncrypt(const bool)));
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(menu_about()));
 }
 
@@ -148,21 +146,6 @@ void MainWindow::menu_setDestination()
         m_destinationPath = path;
         saveSettings();
     }
-}
-
-void MainWindow::menu_removeOriginalFilesAfterEncrypt(const bool checked)
-{
-    if (checked)
-    {
-        m_removeOriginalFiles = "true";
-    }
-    else
-    {
-        m_removeOriginalFiles = "false";
-    }
-
-    saveSettings();
-
 }
 
 void MainWindow::menu_about()
@@ -321,42 +304,6 @@ void MainWindow::loadSettings()
 
     m_destinationPath = m_destinationPath.replace("\n","");
 
-    if (in.atEnd())
-    {
-        file.close();
-        return;
-    }
-
-    line = in.readLine();
-    sl = line.split(":");
-
-    if (sl.size()<2)
-    {
-        file.close();
-        return;
-    }
-
-    if (sl.at(0) != "remove_original_files")
-    {
-        file.close();
-        return;
-    }
-
-    if (sl.at(1)=="false" || sl.at(1) == "true")
-    {
-        m_removeOriginalFiles = sl.at(1);
-        //m_removeOriginalFiles = m_removeOriginalFiles.replace("\n","");
-    }
-
-    if (m_removeOriginalFiles == "true")
-    {
-        m_ui->actionRemove_original_files_after_encrypt->setChecked(1);
-    }
-    else
-    {
-        m_ui->actionRemove_original_files_after_encrypt->setChecked(0);
-    }
-
     file.close();
 }
 
@@ -368,14 +315,6 @@ void MainWindow::saveSettings()
         QTextStream stream( &file );
 
         stream<<"dist_path:" + m_destinationPath + "\n";
-        if (m_removeOriginalFiles == "true")
-        {
-            stream<<"remove_original_files:true\n";
-        }
-        else
-        {
-            stream<<"remove_original_files:false\n";
-        }
     }
     file.close();
 }
@@ -425,7 +364,8 @@ void MainWindow::on_processFinished(const bool isEncrypt)
     m_thread->terminate();
     if (isEncrypt)
     {
-        QMessageBox::information(this,"","Encryption has been completed successfully.");    }
+        QMessageBox::information(this,"","Encryption has been completed successfully.");
+    }
     else
     {
         QMessageBox::information(this,"","Decryption has been completed successfully.");

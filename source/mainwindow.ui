@@ -119,7 +119,6 @@
      <string>Settings</string>
     </property>
     <addaction name="actionSet_Destination"/>
-    <addaction name="actionRemove_original_files_after_encrypt"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
