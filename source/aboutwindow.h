@@ -23,7 +23,7 @@ private:
     Ui::AboutWindow *ui;
 
 private:
-    void closeEvent(QCloseEvent *); // Overriding the window's close event
+    void closeEvent(QCloseEvent *);
     void showEvent(QShowEvent *);
     void setupGui();
 };

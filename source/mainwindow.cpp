@@ -199,32 +199,40 @@ void MainWindow::on_removeButton_clicked()
     }
 }
 
-
-//encrypt button
-void MainWindow::on_encryptButton_clicked()
+bool MainWindow::passwordDialogHandle (const QString &dialogText, QString &password)
 {
-    bool okDialogButton=true;
+    bool okDialogButton = true;
     QInputDialog* inputDialog = new QInputDialog();
     inputDialog->setOptions(QInputDialog::NoButtons);
 
-    QString textDialog =  inputDialog->getText(NULL ,"Encrypt",
+    password =  inputDialog->getText(NULL ,dialogText,
                                               "Password:", QLineEdit::Password,
                                               "", &okDialogButton);
-    if (false == okDialogButton)
+    if (!okDialogButton)
     {
-        return;
+        return false;
     }
 
-    if (textDialog.isEmpty())
+    if (password.isEmpty())
     {
         QMessageBox::information(0,"","The password field cannot be empty!");
-        on_encryptButton_clicked();
+        return false;
+    }
+
+    return true;
+}
+void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool isDecrypted)
+{
+    QString password = "";
+
+    if (!passwordDialogHandle(dialogMessage, password))
+    {
         return;
     }
 
     if (m_model->rowCount()==0)
     {
-                QMessageBox::information(0,"", "Please add some file(s) to encrypt!");
+                QMessageBox::information(0, "", "Please add some file(s)!");
                 return;
     }
 
@@ -233,79 +241,36 @@ void MainWindow::on_encryptButton_clicked()
 
     deleteEncryptionFileNameList();
 
-    //check for exist path
     for (int i=0; i<m_model->rowCount(); i++)
     {
         mi = m_model->index(i,0);
         v=mi.data();
         QString fileName;
         getFileNameByPath(v.toString(),fileName);
-        QString dest_path = m_destinationPath + fileName;
-
-        if (dest_path == v.toString())
-            dest_path += "_en";
-
+        QString destPath = m_destinationPath + fileName;
 
         m_sourceFiles.push_back(std::make_shared<QString>(v.toString()));
-        m_destinationFiles.push_back(std::make_shared<QString> (dest_path));
+        m_destinationFiles.push_back(std::make_shared<QString> (destPath));
     }
-    createThread(textDialog,true);
+
+    createThread(password, isDecrypted);
+}
+
+//encrypt button
+void MainWindow::on_encryptButton_clicked()
+{
+    encryptDecryptHandle("Encrypt", true);
 }
 
 void MainWindow::on_decryptButton_clicked()
 {
-    bool ok;
-    QInputDialog* inputDialog = new QInputDialog();
-    inputDialog->setOptions(QInputDialog::NoButtons);
-
-    QString text =  inputDialog->getText(NULL ,"Decrypt",
-                                              "Password:", QLineEdit::Password,
-                                              "", &ok);
-    if (!ok)
-    {
-        return;
-    }
-
-    if (text.isEmpty())
-    {
-        QMessageBox::information(0,"","The password field cannot be empty!");
-        on_decryptButton_clicked();
-        return;
-    }
-
-    if (m_model->rowCount()==0)
-    {
-        QMessageBox::information(0,"", "Please add some file(s) to dectypt!");
-        return;
-    }
-
-    QModelIndex mi;
-    QVariant v;
-
-    deleteEncryptionFileNameList();
-
-    //check for exist path
-    for (int i=0; i<m_model->rowCount(); i++)
-    {
-        mi = m_model->index(i,0);
-        v=mi.data();
-        QString file_name;
-        getFileNameByPath(v.toString(),file_name);
-        QString dest_path = m_destinationPath + file_name;
-        if (dest_path == v.toString())
-            dest_path += "_de";
-
-        m_sourceFiles.push_back(std::make_shared<QString>(v.toString()));
-        m_destinationFiles.push_back(std::make_shared<QString>(dest_path));
-        //decryptFile(v.toString().toLatin1().data(),dest_path.toLatin1().data(),text.toLatin1().data());
-    }
-    createThread(text, false);
+    encryptDecryptHandle("Decrypt", false);
 }
 
 //add data to tableView widget
 void MainWindow::addDataInTableView(const QString &fileName)
 {
-    //check for existing file_name in tableView
+    //check is fileName exist
     QModelIndex mi;
     QVariant v;
     for (int i=0; i<m_model->rowCount(); i++)
@@ -316,11 +281,11 @@ void MainWindow::addDataInTableView(const QString &fileName)
             return;
     }
 
-    //Add file_name to tableView
+    //Add fileName to tableView widget
     m_model->setRowCount(m_model->rowCount()+1);
     m_model->setData(m_model->index(m_model->rowCount()-1,0),fileName);
 
-    //set data not editable
+    //set data to be not editable
     m_model->item(m_model->rowCount()-1,0)->setEditable(false);
 }
 
@@ -453,31 +418,14 @@ void MainWindow::createThread(const QString &password, const bool isDecrypted)
     m_loadingWindow->show();
 }
 
-void MainWindow::on_processFinished(const bool encrypt)
+void MainWindow::on_processFinished(const bool isEncrypt)
 {
     this->setEnabled(true);
     m_loadingWindow->close();
     m_thread->terminate();
-    if (encrypt)
+    if (isEncrypt)
     {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "", "Encryption has been completed. Do you want to save a list of encrypted file(s) path(s)?",
-                                        QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes)
-        {
-            QString file_name = QFileDialog::getSaveFileName(this, tr("Save list of file(s)"),"",tr("*.lef (*.lef)"));
-
-            QFile file(file_name + ".lef");
-            if ( file.open(QIODevice::ReadWrite) )
-            {
-                QTextStream stream(&file);
-
-                for (int i=0; i<m_destinationFiles.size(); i++)
-                    stream<<*m_destinationFiles[i] + "\n";
-            }
-            file.close();
-        }
-    }
+        QMessageBox::information(this,"","Encryption has been completed successfully.");    }
     else
     {
         QMessageBox::information(this,"","Decryption has been completed successfully.");

@@ -62,15 +62,15 @@ void Thread::setPassword(const QString &password)
     this->m_password = password;
 }
 
-void Thread::readFile (const std::string &filename, std::vector<char> &buffer, size_t &size)
+QByteArray Thread::readFile (const QString &filename)
 {
-    /*
-
-
-    // copies all data into buffer
-    buffer(std::istreambuf_iterator<char>(input), {});
-    size = buffer.size();
-    */
+    QByteArray buffer;
+    QFile CurrentFile(filename);
+    if(CurrentFile.open(QIODevice::ReadOnly))
+    {
+        return CurrentFile.readAll();;
+    }
+    return buffer;
 }
 
 void Thread::writeFile (const QString &filename, const QByteArray &buffer)
@@ -87,23 +87,13 @@ void Thread::writeFile (const QString &filename, const QByteArray &buffer)
 void Thread::encryptFile(const QString &inFile, const QString &outFile, const QString &key)
 {
     //read
-    QFile CurrentFile(inFile);
-    if(!CurrentFile.open(QIODevice::ReadOnly))
-    {
-        return;
-    }
-    QByteArray fileData = CurrentFile.readAll();
+    QByteArray fileData = readFile(inFile);
 
     //ecrypt
-    //QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
-
-    QString iv("your-IV-vector");
-
+    QString iv("your-IV-vector"); //FIXME
     QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
     QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
-
     QByteArray encodedText = m_aes->encode(fileData, hashKey, hashIV);
-
 
     //write
     writeFile (outFile, encodedText);
@@ -111,22 +101,13 @@ void Thread::encryptFile(const QString &inFile, const QString &outFile, const QS
 
 void Thread::decryptFile(const QString &inFile, const QString &outFile, const QString &key)
 {
-    //read file
-    QFile CurrentFile(inFile);
-    if(!CurrentFile.open(QIODevice::ReadOnly))
-    {
-        return;
-    }
-    QByteArray fileData = CurrentFile.readAll();
+    //read
+    QByteArray fileData = readFile(inFile);
 
-    //decrypt file data
-    //QAESEncryption encryption(QAESEncryption::AES_256, QAESEncryption::CBC);
-
-    QString iv("your-IV-vector");
-
+    //decrypt
+    QString iv("your-IV-vector"); //FIXME
     QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
     QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
-
     QByteArray decodedText = m_aes->decode(fileData, hashKey, hashIV);
 
     //write

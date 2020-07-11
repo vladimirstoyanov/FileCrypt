@@ -54,6 +54,8 @@ private:
 
 private:
     void addDataInTableView(const QString &path);
+    void createThread(const QString &password, const bool isDecrypted);
+    void encryptDecryptHandle (const QString& dialogMessage,const bool isDecrypted);
     void deleteEncryptionFileNameList();
     int  getDirNameByPath  (const QString &path, QString &dirname);
     int  getFileNameByPath (const QString &path, QString &filename);
@@ -61,12 +63,12 @@ private:
     void initActions();
     void initThread ();
     void loadSettings();
-    void createThread(const QString &password, const bool isDecrypted);
+    bool passwordDialogHandle (const QString &dialogText, QString &password);
     void saveDialog();
     void saveSettings();
 
 public slots:
-    void on_processFinished(const bool encrypt);
+    void on_processFinished(const bool isEncrypt);
 
 private slots:
     void menu_about();

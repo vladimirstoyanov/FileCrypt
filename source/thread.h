@@ -37,7 +37,7 @@ private:
 private:
     void encryptFile(const QString &inFile, const QString &outFile, const QString &key);
     void decryptFile(const QString &inFile, const QString &outFile, const QString &key);
-    void readFile (const std::string &filename, std::vector<char> &buffer, size_t &size);
+    QByteArray readFile(const QString &filename);
     void writeFile (const QString &filename, const QByteArray &buffer);
 
 signals:

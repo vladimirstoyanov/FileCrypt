@@ -30,7 +30,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Add</string>
+     <string>Add a file</string>
     </property>
    </widget>
    <widget class="QPushButton" name="encryptButton">
@@ -92,7 +92,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Clear All</string>
+     <string>Clear all</string>
     </property>
    </widget>
   </widget>

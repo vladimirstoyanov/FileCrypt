@@ -1,6 +1,10 @@
 #ifndef QAESENCRYPTION_H
 #define QAESENCRYPTION_H
 
+/*
+ * The implementation of aes is made by Matteo B (brikie) - https://github.com/bricke/Qt-AES
+*/
+
 #include <QObject>
 #include <QByteArray>
 #include <QDebug>
