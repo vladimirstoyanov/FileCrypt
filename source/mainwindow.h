@@ -37,6 +37,9 @@ public:
 
     void resizeEvent(QResizeEvent *event);
 
+public slots:
+    void on_processFinished(const bool isEncrypt);
+
 private:
     std::shared_ptr<QAESEncryption>         m_aes;
     std::shared_ptr<AboutWindow>            m_aboutWindow;
@@ -50,8 +53,6 @@ private:
     std::shared_ptr<Thread>                 m_thread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
 
-
-private:
     void addDataInTableView(const QString &path);
     void createThread(const QString &password, const bool isDecrypted);
     void encryptDecryptHandle (const QString& dialogMessage,const bool isDecrypted);
@@ -65,9 +66,6 @@ private:
     bool passwordDialogHandle (const QString &dialogText, QString &password);
     void saveDialog();
     void saveSettings();
-
-public slots:
-    void on_processFinished(const bool isEncrypt);
 
 private slots:
     void menu_about();

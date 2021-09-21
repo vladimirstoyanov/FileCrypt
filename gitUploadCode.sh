@@ -1,19 +1,13 @@
 #!/bin/sh
 
-#$1 - comment
-#$2 - path
-
-if [ $# -ne 2 ]
+if [ $# -ne 1 ]
 then
   echo "Wrong input! please use the following input: "
         echo "1 arg - comment"
-        echo "2 arg - path"
   exit 1
 fi
 
-cd $2
-
-rm -rf build-fileCrypt-Desktop-Debug/
+rm -rf build-fileCrypt-Desktop*
 rm source/*.pro.user
 
 echo "git add --all"

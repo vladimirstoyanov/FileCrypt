@@ -34,7 +34,6 @@ private:
     QString                         m_password;
     QList<std::shared_ptr<QString>> m_sourceFiles;
 
-private:
     void encryptFile(const QString &inFile, const QString &outFile, const QString &key);
     void decryptFile(const QString &inFile, const QString &outFile, const QString &key);
     QByteArray readFile(const QString &filename);

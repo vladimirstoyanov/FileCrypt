@@ -22,7 +22,6 @@ public:
 private:
     Ui::AboutWindow *ui;
 
-private:
     void closeEvent(QCloseEvent *);
     void showEvent(QShowEvent *);
     void setupGui();

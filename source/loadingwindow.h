@@ -24,9 +24,11 @@ class LoadingWindow : public QWidget
 public:
     explicit LoadingWindow(QWidget *parent = 0);
     virtual ~LoadingWindow();
+
 public slots:
     void on_setLable(const QString &label);
     void on_percentageUpdated (const int percentage);
+
 private:
     std::shared_ptr<QLabel>             m_loadingGif;
     std::shared_ptr<QLabel>             m_filenameLabel;
