@@ -5,7 +5,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
     QWidget(parent)
     , m_loadingGif (std::make_shared<QLabel>(this))
     , m_filenameLabel (std::make_shared<QLabel>(this))
-    , m_filenameHeightRatio (0.07)
+    , m_filenameLabelHeightRatio (0.07)
     , m_movie (std::make_shared<QMovie>("../resources/loading.gif"))
     , m_percentageLabel (std::make_shared<QLabel>(this))
     , m_percentageLabelWidthRatio(0.25)
@@ -20,9 +20,9 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 
     this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
 
-    int filenameHeight =  this->height()*m_filenameHeightRatio;
+    int filenameHeight =  this->height()*m_filenameLabelHeightRatio;
     m_filenameLabel->setGeometry(m_widgetOffset,
-                                 this->height()*m_filenameHeightRatio,
+                                 this->height()*m_filenameLabelHeightRatio,
                                  this->width()-m_widgetOffset*2,
                                  m_filenameLabel->height());
 

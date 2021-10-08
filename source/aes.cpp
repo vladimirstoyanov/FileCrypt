@@ -597,8 +597,8 @@ QByteArray QAESEncryption::decode(const QByteArray &rawText, const QByteArray &k
         break;
     case CBC: {
             QByteArray ivTemp(iv);
-            qDebug()<<"rawText size:"<<rawText.size();
             int percentage = 0;
+            percentageUpdated(percentage);
             int oldPercentage = 0;
             double size_ = rawText.size();
             for(int i=0; i < rawText.size(); i+= m_blocklen){
@@ -608,10 +608,11 @@ QByteArray QAESEncryption::decode(const QByteArray &rawText, const QByteArray &k
                 percentage = i/size_ * 100;
                 if (oldPercentage!=percentage)
                 {
-                    qDebug()<<percentage<<"%";
                     oldPercentage = percentage;
+                    percentageUpdated(percentage);
                 }
             }
+            percentageUpdated(100);
         }
         break;
     case CFB: {

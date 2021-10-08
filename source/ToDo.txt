@@ -1,1 +1,2 @@
-- add different types of encryption - 1000pt
+- add different types of encryption;
+- improve encrypt/decrypt performance;

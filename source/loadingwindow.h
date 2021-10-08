@@ -32,7 +32,7 @@ public slots:
 private:
     std::shared_ptr<QLabel>             m_loadingGif;
     std::shared_ptr<QLabel>             m_filenameLabel;
-    double                              m_filenameHeightRatio;
+    double                              m_filenameLabelHeightRatio;
     std::shared_ptr<QMovie>             m_movie;
     std::shared_ptr<QLabel>             m_percentageLabel;
     double                              m_percentageLabelWidthRatio;
