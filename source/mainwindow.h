@@ -18,9 +18,9 @@
 
 #include "aes.h"
 #include "aboutwindow.h"
-#include "thread.h"
 #include "loadingwindow.h"
-
+#include "path.h"
+#include "thread.h"
 
 namespace Ui
 {
@@ -49,6 +49,7 @@ private:
     std::shared_ptr<QStandardItemModel>     m_model;
     int                                     m_modelFilePathColumnId;
     QList<std::shared_ptr<QString>>         m_sourceFiles;
+    Path                                    m_path;
     std::shared_ptr<Thread>                 m_thread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
     int                                     m_widgetOffset;
@@ -57,8 +58,7 @@ private:
     void createThread(const QString &password, const bool isDecrypted);
     void encryptDecryptHandle (const QString& dialogMessage,const bool isDecrypted);
     void deleteEncryptionFileNameList();
-    int  getDirectoryNameByPath  (const QString &path, QString &dirname);
-    int  getFileNameByPath (const QString &path, QString &filename);
+
     void initializeModelTableView();
     void initializeActions();
     void initializeThread ();

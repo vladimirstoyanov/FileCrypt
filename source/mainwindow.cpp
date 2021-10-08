@@ -189,7 +189,7 @@ void MainWindow::on_addButton_clicked()
     }
 
     QString afld_tmp = "";
-    if (!getDirectoryNameByPath(l_path[0], afld_tmp))
+    if (m_path.getDirectoryNameByPath(l_path[0], afld_tmp))
     {
         m_fileDir = afld_tmp;
     }
@@ -264,7 +264,7 @@ void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool 
         mi = m_model->index(i,m_modelFilePathColumnId);
         v=mi.data();
         QString fileName;
-        getFileNameByPath(v.toString(),fileName);
+        m_path.getFileNameByPath(v.toString(),fileName);
         QString destPath = m_destinationPath + fileName;
 
         m_sourceFiles.push_back(std::make_shared<QString>(v.toString()));
@@ -354,34 +354,6 @@ void MainWindow::saveSettings()
     file.close();
 }
 
-int MainWindow::getDirectoryNameByPath(const QString &path, QString &dirname)
-{
-    QString separator;
-    separator = "/";
-
-    int index= -1;
-    for (int i=path.length()-1; i>=0; --i)
-    {
-
-        if (path[i] == separator[0])
-        {
-            index = i;
-            break;
-        }
-    }
-    if (-1 == index)
-    {
-        return 1;
-    }
-
-    for (int i=0; i<=index; ++i)
-    {
-        dirname+=path[i];
-    }
-
-    return 0;
-}
-
 void MainWindow::createThread(const QString &password, const bool isDecrypted)
 {
     m_thread->setSourceDestionationFiles(m_sourceFiles, m_destinationFiles);
@@ -452,30 +424,4 @@ void MainWindow::deleteEncryptionFileNameList()
     {
         m_destinationFiles.clear();
     }
-}
-
-int MainWindow::getFileNameByPath(const QString &path, QString &filename)
-{
-    QString separator, filename_tmp = "";
-    separator = "/";
-
-    if (separator.length()<1)
-    {
-        return 1;
-    }
-
-    for (int i=path.length()-1; i>=0; --i)
-    {
-        if (path[i] == separator[0])
-        {
-            break;
-        }
-        if (0==i) //if a separator hasn't been found then it will return 1. It's meant that an error has been occured.
-        {
-            return 1;
-        }
-        filename_tmp = path[i] + filename_tmp;
-    }
-    filename = filename_tmp;
-    return 0;
 }

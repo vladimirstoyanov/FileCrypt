@@ -17,12 +17,14 @@ SOURCES += main.cpp\
     aboutwindow.cpp \
     aes.cpp \
     mainwindow.cpp \
+    path.cpp \
     thread.cpp \
     loadingwindow.cpp
 
 HEADERS  += mainwindow.h \
     aboutwindow.h \
     aes.h \
+    path.h \
     thread.h \
     loadingwindow.h
 
