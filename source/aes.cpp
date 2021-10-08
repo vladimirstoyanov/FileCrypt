@@ -545,7 +545,6 @@ QByteArray QAESEncryption::encode(const QByteArray &rawText, const QByteArray &k
             percentage = i/size_ * 100;
             if (oldPercentage!=percentage)
             {
-                qDebug()<<percentage<<"%";
                 oldPercentage = percentage;
                 percentageUpdated(percentage);
             }
