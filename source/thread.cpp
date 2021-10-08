@@ -14,7 +14,7 @@ Thread::~Thread ()
 
 }
 
-void Thread::setSourceDestionationFiles(const QList<std::shared_ptr<QString> > &source, const QList<std::shared_ptr<QString> > &destination)
+void Thread::setSourceDestionationFiles(const std::vector<std::shared_ptr<QString> > &source, const std::vector<std::shared_ptr<QString> > &destination)
 {
     m_sourceFiles = source;
     m_destinationFiles = destination;
@@ -38,7 +38,7 @@ void Thread::run()
 
     if (m_decrypted)
     {
-        for (int i = 0; i< m_sourceFiles.size(); ++i)
+        for (unsigned int i = 0; i< m_sourceFiles.size(); ++i)
         {
             emit setLable("Encrypting: " + *m_sourceFiles[i]);
             encryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
@@ -46,7 +46,7 @@ void Thread::run()
     }
     else
     {
-        for (int i = 0; i<m_sourceFiles.size(); ++i)
+        for (unsigned int i = 0; i<m_sourceFiles.size(); ++i)
         {
             emit setLable("Decrypting: " + *m_sourceFiles[i]);
             decryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);

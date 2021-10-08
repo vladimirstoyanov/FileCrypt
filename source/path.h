@@ -8,7 +8,7 @@ class Path
 public:
     Path();
 
-    bool  getDirectoryNameByPath  (const QString &path, QString &dirname);
+    bool getDirectoryNameByPath  (const QString &path, QString &dirname);
     bool getFileNameByPath(const QString &path, QString &filename);
 };
 

@@ -42,13 +42,13 @@ private:
     std::shared_ptr<QAESEncryption>         m_aes;
     std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
-    QList<std::shared_ptr<QString>>         m_destinationFiles;
+    std::vector<std::shared_ptr<QString>>   m_destinationFiles;
     QString                                 m_destinationPath;
     QString                                 m_fileDir;
     std::shared_ptr<LoadingWindow>          m_loadingWindow;
     std::shared_ptr<QStandardItemModel>     m_model;
     int                                     m_modelFilePathColumnId;
-    QList<std::shared_ptr<QString>>         m_sourceFiles;
+    std::vector<std::shared_ptr<QString>>   m_sourceFiles;
     Path                                    m_path;
     std::shared_ptr<Thread>                 m_thread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
