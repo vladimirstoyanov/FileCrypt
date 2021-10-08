@@ -17,9 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     m_ui->setupUi(this);
     this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
-    initModelTableView();
-    initActions();
-    initThread();
+    initializeModelTableView();
+    initializeActions();
+    initializeThread();
     loadSettings();
 }
 
@@ -64,13 +64,13 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     m_ui->tableView->setColumnWidth(0,m_ui->tableView->width());
 }
 
-void MainWindow::initModelTableView()
+void MainWindow::initializeModelTableView()
 {
     m_model->setHorizontalHeaderItem(m_modelFilePathColumnId, new QStandardItem(QString("File path")));
     m_ui->tableView->setModel(m_model.get());
 }
 
-void MainWindow::initActions()
+void MainWindow::initializeActions()
 {
     m_ui->actionOpen->setShortcut(QKeySequence::New);
     m_ui->actionSave->setShortcut(QKeySequence::Save);
@@ -85,7 +85,7 @@ void MainWindow::initActions()
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(menu_about()));
 }
 
-void MainWindow::initThread()
+void MainWindow::initializeThread()
 {
     connect(m_thread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
     connect(m_thread.get(), SIGNAL(setLable(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
@@ -121,7 +121,7 @@ void MainWindow::menu_open()
             continue;
         }
         file1.close();
-        addDataInTableView(line);
+        addDataToTableView(line);
       }
       file.close();
 }
@@ -189,14 +189,14 @@ void MainWindow::on_addButton_clicked()
     }
 
     QString afld_tmp = "";
-    if (!getDirNameByPath(l_path[0], afld_tmp))
+    if (!getDirectoryNameByPath(l_path[0], afld_tmp))
     {
         m_fileDir = afld_tmp;
     }
 
     for (int i=0; i<l_path.size(); ++i)
     {
-        addDataInTableView(l_path[i]);
+        addDataToTableView(l_path[i]);
     }
 }
 
@@ -286,7 +286,7 @@ void MainWindow::on_decryptButton_clicked()
 }
 
 //add data to tableView widget
-void MainWindow::addDataInTableView(const QString &fileName)
+void MainWindow::addDataToTableView(const QString &fileName)
 {
     //check is fileName exist
     QModelIndex mi;
@@ -354,7 +354,7 @@ void MainWindow::saveSettings()
     file.close();
 }
 
-int MainWindow::getDirNameByPath(const QString &path, QString &dirname)
+int MainWindow::getDirectoryNameByPath(const QString &path, QString &dirname)
 {
     QString separator;
     separator = "/";

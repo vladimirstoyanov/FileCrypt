@@ -35,8 +35,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void resizeEvent(QResizeEvent *event);
-
 public slots:
     void on_processFinished(const bool isEncrypt);
 
@@ -55,17 +53,18 @@ private:
     std::shared_ptr<Ui::MainWindow>         m_ui;
     int                                     m_widgetOffset;
 
-    void addDataInTableView(const QString &path);
+    void addDataToTableView(const QString &path);
     void createThread(const QString &password, const bool isDecrypted);
     void encryptDecryptHandle (const QString& dialogMessage,const bool isDecrypted);
     void deleteEncryptionFileNameList();
-    int  getDirNameByPath  (const QString &path, QString &dirname);
+    int  getDirectoryNameByPath  (const QString &path, QString &dirname);
     int  getFileNameByPath (const QString &path, QString &filename);
-    void initModelTableView();
-    void initActions();
-    void initThread ();
+    void initializeModelTableView();
+    void initializeActions();
+    void initializeThread ();
     void loadSettings();
     bool passwordDialogHandle (const QString &dialogText, QString &password);
+    void resizeEvent(QResizeEvent *event);
     void saveDialog();
     void saveSettings();
 
