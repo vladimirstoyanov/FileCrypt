@@ -49,9 +49,11 @@ private:
     QString                                 m_fileDir;
     std::shared_ptr<LoadingWindow>          m_loadingWindow;
     std::shared_ptr<QStandardItemModel>     m_model;
+    int                                     m_modelFilePathColumnId;
     QList<std::shared_ptr<QString>>         m_sourceFiles;
     std::shared_ptr<Thread>                 m_thread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
+    int                                     m_widgetOffset;
 
     void addDataInTableView(const QString &path);
     void createThread(const QString &password, const bool isDecrypted);

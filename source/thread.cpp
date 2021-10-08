@@ -38,22 +38,22 @@ void Thread::run()
 
     if (m_decrypted)
     {
-        for (int i = 0; i< m_sourceFiles.size(); i++)
+        for (int i = 0; i< m_sourceFiles.size(); ++i)
         {
-            emit setLabel("Encrypt: " + *m_sourceFiles[i]);
+            emit setLable("Encrypting: " + *m_sourceFiles[i]);
             encryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
         }
     }
     else
     {
-        for (int i = 0; i<m_sourceFiles.size(); i++)
+        for (int i = 0; i<m_sourceFiles.size(); ++i)
         {
-            emit setLabel("Decrypt: " + *m_sourceFiles[i]);
+            emit setLable("Decrypting: " + *m_sourceFiles[i]);
             decryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
         }
     }
 
-    emit setLabel("");
+    emit setLable("");
     emit processFinished(m_decrypted);
     exec();
 }
@@ -68,7 +68,7 @@ QByteArray Thread::readFile (const QString &filename)
     QFile CurrentFile(filename);
     if(CurrentFile.open(QIODevice::ReadOnly))
     {
-        return CurrentFile.readAll();;
+        return CurrentFile.readAll();
     }
     return buffer;
 }

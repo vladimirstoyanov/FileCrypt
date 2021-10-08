@@ -32,9 +32,12 @@ public slots:
 private:
     std::shared_ptr<QLabel>             m_loadingGif;
     std::shared_ptr<QLabel>             m_filenameLabel;
+    double                              m_filenameHeightRatio;
     std::shared_ptr<QMovie>             m_movie;
     std::shared_ptr<QLabel>             m_percentageLabel;
+    double                              m_percentageLabelWidthRatio;
     std::shared_ptr<Ui::LoadingWindow>  m_ui;
+    int                                 m_widgetOffset;
 
     void paintEvent( QPaintEvent* e );
 };

@@ -10,8 +10,10 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_fileDir                 ("")
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
+    , m_modelFilePathColumnId   (0)
     , m_thread                  (std::make_shared<Thread> (m_aes))
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
+    , m_widgetOffset            (5)
 {
     m_ui->setupUi(this);
     this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
@@ -29,18 +31,42 @@ MainWindow::~MainWindow()
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
-    m_ui->tableView->setGeometry(5,5,this->width()-10, this->height()-(15 + m_ui->encryptButton->height() + m_ui->menuBar->height()));
-    m_ui->addButton->setGeometry(5,m_ui->tableView->y() + m_ui->tableView->height() + 5, m_ui->addButton->width(), m_ui->addButton->height());
-    m_ui->decryptButton->setGeometry(this->width()-(m_ui->decryptButton->width()+5), m_ui->addButton->y(), m_ui->decryptButton->width(), m_ui->decryptButton->height());
-    m_ui->encryptButton->setGeometry(m_ui->decryptButton->x() - (m_ui->encryptButton->width()+5), m_ui->addButton->y(), m_ui->decryptButton->width(), m_ui->decryptButton->height());
-    m_ui->removeButton->setGeometry(m_ui->addButton->x() + m_ui->addButton->width() + 5, m_ui->addButton->y(), m_ui->removeButton->width(), m_ui->removeButton->height());
-    m_ui->removeAllButton->setGeometry(m_ui->removeButton->x() + m_ui->removeButton->width() + 5, m_ui->addButton->y(), m_ui->removeAllButton->width(), m_ui->removeAllButton->height());
+    m_ui->tableView->setGeometry(m_widgetOffset,
+                                 m_widgetOffset,
+                                 this->width()-m_widgetOffset*2,
+                                 this->height()-(m_widgetOffset*3 + m_ui->encryptButton->height() + m_ui->menuBar->height()));
+
+    m_ui->addButton->setGeometry(m_ui->tableView->x(),
+                                 m_ui->tableView->y() + m_ui->tableView->height() + m_widgetOffset,
+                                 m_ui->addButton->width(),
+                                 m_ui->addButton->height());
+
+    m_ui->decryptButton->setGeometry(this->width()-(m_ui->decryptButton->width()+m_widgetOffset),
+                                     m_ui->addButton->y(),
+                                     m_ui->decryptButton->width(),
+                                     m_ui->decryptButton->height());
+
+    m_ui->encryptButton->setGeometry(m_ui->decryptButton->x() - (m_ui->encryptButton->width()+m_widgetOffset),
+                                     m_ui->addButton->y(),
+                                     m_ui->decryptButton->width(),
+                                     m_ui->decryptButton->height());
+
+    m_ui->removeButton->setGeometry(m_ui->addButton->x() + m_ui->addButton->width() + m_widgetOffset,
+                                    m_ui->addButton->y(),
+                                    m_ui->removeButton->width(),
+                                    m_ui->removeButton->height());
+
+    m_ui->removeAllButton->setGeometry(m_ui->removeButton->x() + m_ui->removeButton->width() + m_widgetOffset,
+                                       m_ui->addButton->y(),
+                                       m_ui->removeAllButton->width(),
+                                       m_ui->removeAllButton->height());
+
     m_ui->tableView->setColumnWidth(0,m_ui->tableView->width());
 }
 
 void MainWindow::initModelTableView()
 {
-    m_model->setHorizontalHeaderItem(0, new QStandardItem(QString("File path")));
+    m_model->setHorizontalHeaderItem(m_modelFilePathColumnId, new QStandardItem(QString("File path")));
     m_ui->tableView->setModel(m_model.get());
 }
 
@@ -62,10 +88,11 @@ void MainWindow::initActions()
 void MainWindow::initThread()
 {
     connect(m_thread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
-    connect(m_thread.get(), SIGNAL(setLabel(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
+    connect(m_thread.get(), SIGNAL(setLable(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
     connect(m_aes.get(), SIGNAL(percentageUpdated(const int)),m_loadingWindow.get(),SLOT(on_percentageUpdated(const int)));
 }
 
+//ToDo: split the implementation of menu_open method
 void MainWindow::menu_open()
 {
       QString filepath = QFileDialog::getOpenFileName(this, tr("List of Encripted File(s)"),"",tr("*.lef (*.lef)"));
@@ -101,7 +128,7 @@ void MainWindow::menu_open()
 
 void MainWindow::menu_save()
 {
-    if (m_currentFile == "")
+    if ("" == m_currentFile)
     {
         saveDialog();
     }
@@ -114,9 +141,9 @@ void MainWindow::menu_save()
 
             QModelIndex mi;
             QVariant v;
-            for (int i=0; i<m_model->rowCount(); i++)
+            for (int i=0; i<m_model->rowCount(); ++i)
             {
-                mi = m_model->index(i,0);
+                mi = m_model->index(i,m_modelFilePathColumnId);
                 v=mi.data();
 
                 stream<<v.toString() + "\n";
@@ -138,9 +165,9 @@ void MainWindow::menu_exit()
 
 void MainWindow::menu_setDestination()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Choose Or Create Directory"),
+    QString path = QFileDialog::getExistingDirectory(this, tr("Set A Directory"),
                                                              m_destinationPath,
-                                                               QFileDialog::DontResolveSymlinks | QFileDialog::ReadOnly);
+                                                             QFileDialog::DontResolveSymlinks | QFileDialog::ReadOnly);
     if (path!="")
     {
         m_destinationPath = path;
@@ -156,15 +183,21 @@ void MainWindow::menu_about()
 void MainWindow::on_addButton_clicked()
 {
     QStringList l_path = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),m_fileDir, tr("Files (*)"));
-    if (l_path.size() == 0)
+    if (0 == l_path.size())
+    {
         return;
+    }
 
     QString afld_tmp = "";
     if (!getDirNameByPath(l_path[0], afld_tmp))
+    {
         m_fileDir = afld_tmp;
+    }
 
-    for (int i=0; i<l_path.size(); i++)
+    for (int i=0; i<l_path.size(); ++i)
+    {
         addDataInTableView(l_path[i]);
+    }
 }
 
 void MainWindow::on_removeButton_clicked()
@@ -174,7 +207,7 @@ void MainWindow::on_removeButton_clicked()
 
     qSort(indexes.begin(), indexes.end());
 
-    //remove last index in list
+    //remove the tableView's last index
     while (!indexes.isEmpty())
     {
         m_model->removeRows(indexes.last().row(), 1);
@@ -204,6 +237,8 @@ bool MainWindow::passwordDialogHandle (const QString &dialogText, QString &passw
 
     return true;
 }
+
+//ToDo: split the below method to two methods
 void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool isDecrypted)
 {
     QString password = "";
@@ -213,7 +248,7 @@ void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool 
         return;
     }
 
-    if (m_model->rowCount()==0)
+    if (0==m_model->rowCount())
     {
                 QMessageBox::information(0, "", "Please add some file(s)!");
                 return;
@@ -224,9 +259,9 @@ void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool 
 
     deleteEncryptionFileNameList();
 
-    for (int i=0; i<m_model->rowCount(); i++)
+    for (int i=0; i<m_model->rowCount(); ++i)
     {
-        mi = m_model->index(i,0);
+        mi = m_model->index(i,m_modelFilePathColumnId);
         v=mi.data();
         QString fileName;
         getFileNameByPath(v.toString(),fileName);
@@ -256,9 +291,9 @@ void MainWindow::addDataInTableView(const QString &fileName)
     //check is fileName exist
     QModelIndex mi;
     QVariant v;
-    for (int i=0; i<m_model->rowCount(); i++)
+    for (int i=0; i<m_model->rowCount(); ++i)
     {
-        mi = m_model->index(i,0);
+        mi = m_model->index(i,m_modelFilePathColumnId);
         v=mi.data();
         if (v.toString() == fileName)
             return;
@@ -266,10 +301,10 @@ void MainWindow::addDataInTableView(const QString &fileName)
 
     //Add fileName to tableView widget
     m_model->setRowCount(m_model->rowCount()+1);
-    m_model->setData(m_model->index(m_model->rowCount()-1,0),fileName);
+    m_model->setData(m_model->index(m_model->rowCount()-1,m_modelFilePathColumnId),fileName);
 
     //set data to be not editable
-    m_model->item(m_model->rowCount()-1,0)->setEditable(false);
+    m_model->item(m_model->rowCount()-1,m_modelFilePathColumnId)->setEditable(false);
 }
 
 void MainWindow::loadSettings()
@@ -324,8 +359,8 @@ int MainWindow::getDirNameByPath(const QString &path, QString &dirname)
     QString separator;
     separator = "/";
 
-    int index=-1;
-    for (int i=path.length()-1; i>=0; i--)
+    int index= -1;
+    for (int i=path.length()-1; i>=0; --i)
     {
 
         if (path[i] == separator[0])
@@ -334,11 +369,15 @@ int MainWindow::getDirNameByPath(const QString &path, QString &dirname)
             break;
         }
     }
-    if (index == -1)
+    if (-1 == index)
+    {
         return 1;
+    }
 
-    for (int i=0; i<=index; i++)
+    for (int i=0; i<=index; ++i)
+    {
         dirname+=path[i];
+    }
 
     return 0;
 }
@@ -391,9 +430,9 @@ void MainWindow::saveDialog()
 
         QModelIndex mi;
         QVariant v;
-        for (int i=0; i<m_model->rowCount(); i++)
+        for (int i=0; i<m_model->rowCount(); ++i)
         {
-            mi = m_model->index(i,0);
+            mi = m_model->index(i,m_modelFilePathColumnId);
             v=mi.data();
 
             stream<<v.toString() + "\n";
@@ -417,7 +456,7 @@ void MainWindow::deleteEncryptionFileNameList()
 
 int MainWindow::getFileNameByPath(const QString &path, QString &filename)
 {
-    QString separator, filename_tmp ="";
+    QString separator, filename_tmp = "";
     separator = "/";
 
     if (separator.length()<1)
@@ -425,13 +464,13 @@ int MainWindow::getFileNameByPath(const QString &path, QString &filename)
         return 1;
     }
 
-    for (int i=path.length()-1; i>=0; i--)
+    for (int i=path.length()-1; i>=0; --i)
     {
         if (path[i] == separator[0])
         {
             break;
         }
-        if (i == 0) //if a separator hasn't been found then it will return 1. It's meant that an error has been occured.
+        if (0==i) //if a separator hasn't been found then it will return 1. It's meant that an error has been occured.
         {
             return 1;
         }

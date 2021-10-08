@@ -41,7 +41,7 @@ private:
 
 signals:
     void processFinished(const bool);
-    void setLabel(const QString &);
+    void setLable(const QString &);
 
 };
 
