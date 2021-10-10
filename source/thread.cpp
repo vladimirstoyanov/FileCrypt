@@ -1,8 +1,7 @@
 #include "thread.h"
 
-Thread::Thread(std::shared_ptr<QAESEncryption> aes, QObject *parent) :
+Thread::Thread(QObject *parent) :
     QThread(parent)
-    , m_aes(aes)
     , m_decrypted(false)
     , m_password ("")
 {
@@ -14,10 +13,23 @@ Thread::~Thread ()
 
 }
 
-void Thread::setSourceDestionationFiles(const std::vector<std::shared_ptr<QString> > &source, const std::vector<std::shared_ptr<QString> > &destination)
+void Thread::setSourceFiles(const std::vector<File> &source)
 {
-    m_sourceFiles = source;
-    m_destinationFiles = destination;
+    m_sourceFiles.clear();
+    for (unsigned int i=0; i<source.size(); ++i)
+    {
+        m_sourceFiles.push_back(source[i]);
+    }
+}
+
+void Thread::setDestinationFiles (const std::vector<QString> &destination)
+{
+    m_destinationFiles.clear();
+    for (unsigned int i=0; i<destination.size(); ++i)
+    {
+        m_destinationFiles.push_back(destination[i]);
+    }
+
 }
 
 void Thread::setIsDecrypted(const bool isDecrypted)
@@ -38,78 +50,41 @@ void Thread::run()
 
     if (m_decrypted)
     {
-        for (unsigned int i = 0; i< m_sourceFiles.size(); ++i)
-        {
-            emit setLable("Encrypting: " + *m_sourceFiles[i]);
-            encryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
-        }
+        encryptFiles();
     }
     else
     {
-        for (unsigned int i = 0; i<m_sourceFiles.size(); ++i)
-        {
-            emit setLable("Decrypting: " + *m_sourceFiles[i]);
-            decryptFile(*m_sourceFiles[i], *m_destinationFiles[i], m_password);
-        }
+        decryptFiles();
     }
 
     emit setLable("");
     emit processFinished(m_decrypted);
     exec();
 }
+
 void Thread::setPassword(const QString &password)
 {
     this->m_password = password;
 }
 
-QByteArray Thread::readFile (const QString &filename)
+
+void Thread::decryptFiles()
 {
-    QByteArray buffer;
-    QFile CurrentFile(filename);
-    if(CurrentFile.open(QIODevice::ReadOnly))
+    for (unsigned int i = 0; i<m_sourceFiles.size(); ++i)
     {
-        return CurrentFile.readAll();
+        emit setLable("Decrypting: " + m_sourceFiles[i].getFileName());
+        m_sourceFiles[i].decrypt(m_destinationFiles[i], m_password);
     }
-    return buffer;
 }
 
-void Thread::writeFile (const QString &filename, const QByteArray &buffer)
+void Thread::encryptFiles()
 {
-    QFile outFile(filename);
-    if (!outFile.open(QIODevice::WriteOnly)) {
-            qDebug() << "can't open outFile";
-            return;
+    for (unsigned int i = 0; i< m_sourceFiles.size(); ++i)
+    {
+        emit setLable("Encrypting: " + m_sourceFiles[i].getFileName());
+        m_sourceFiles[i].encrypt(m_destinationFiles[i], m_password);
     }
-    outFile.write(buffer);
-    outFile.close();
 }
 
-void Thread::encryptFile(const QString &inFile, const QString &outFile, const QString &key)
-{
-    //read
-    QByteArray fileData = readFile(inFile);
 
-    //ecrypt
-    QString iv("your-IV-vector"); //FIXME
-    QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
-    QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
-    QByteArray encodedText = m_aes->encode(fileData, hashKey, hashIV);
 
-    //write
-    writeFile (outFile, encodedText);
-}
-
-void Thread::decryptFile(const QString &inFile, const QString &outFile, const QString &key)
-{
-    //read
-    QByteArray fileData = readFile(inFile);
-
-    //decrypt
-    QString iv("your-IV-vector"); //FIXME
-    QByteArray hashKey = QCryptographicHash::hash(key.toLocal8Bit(), QCryptographicHash::Sha256);
-    QByteArray hashIV = QCryptographicHash::hash(iv.toLocal8Bit(), QCryptographicHash::Md5);
-    QByteArray decodedText = m_aes->decode(fileData, hashKey, hashIV);
-
-    //write
-    writeFile (outFile, decodedText);
-}

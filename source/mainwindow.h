@@ -18,6 +18,8 @@
 
 #include "aes.h"
 #include "aboutwindow.h"
+#include "file.h"
+#include "fileoperations.h"
 #include "loadingwindow.h"
 #include "path.h"
 #include "thread.h"
@@ -42,13 +44,14 @@ private:
     std::shared_ptr<QAESEncryption>         m_aes;
     std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
-    std::vector<std::shared_ptr<QString>>   m_destinationFiles;
+    std::vector<QString>                    m_destinationFiles;
     QString                                 m_destinationPath;
     QString                                 m_fileDir;
+    FileOperations                          m_fileOperations;
     std::shared_ptr<LoadingWindow>          m_loadingWindow;
     std::shared_ptr<QStandardItemModel>     m_model;
     int                                     m_modelFilePathColumnId;
-    std::vector<std::shared_ptr<QString>>   m_sourceFiles;
+    std::vector<File>                       m_sourceFiles;
     Path                                    m_path;
     std::shared_ptr<Thread>                 m_thread;
     std::shared_ptr<Ui::MainWindow>         m_ui;

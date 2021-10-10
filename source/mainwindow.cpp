@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
     , m_modelFilePathColumnId   (0)
-    , m_thread                  (std::make_shared<Thread> (m_aes))
+    , m_thread                  (std::make_shared<Thread> ())
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
     , m_widgetOffset            (5)
 {
@@ -188,11 +188,7 @@ void MainWindow::on_addButton_clicked()
         return;
     }
 
-    QString afld_tmp = "";
-    if (m_path.getDirectoryNameByPath(l_path[0], afld_tmp))
-    {
-        m_fileDir = afld_tmp;
-    }
+    QString afld_tmp = m_fileDir = m_path.getDirectoryNameByPath(l_path[0]);
 
     for (int i=0; i<l_path.size(); ++i)
     {
@@ -263,12 +259,13 @@ void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool 
     {
         mi = m_model->index(i,m_modelFilePathColumnId);
         v=mi.data();
-        QString fileName;
-        m_path.getFileNameByPath(v.toString(),fileName);
+        QString fileName=m_path.getFileNameByPath(v.toString());
         QString destPath = m_destinationPath + fileName;
 
-        m_sourceFiles.push_back(std::make_shared<QString>(v.toString()));
-        m_destinationFiles.push_back(std::make_shared<QString> (destPath));
+        File file(fileName, m_path.getDirectoryNameByPath(fileName), v.toString(), m_aes);
+
+        m_sourceFiles.push_back(file);
+        m_destinationFiles.push_back(destPath);
     }
 
     createThread(password, isDecrypted);
@@ -296,7 +293,9 @@ void MainWindow::addDataToTableView(const QString &fileName)
         mi = m_model->index(i,m_modelFilePathColumnId);
         v=mi.data();
         if (v.toString() == fileName)
+        {
             return;
+        }
     }
 
     //Add fileName to tableView widget
@@ -356,7 +355,8 @@ void MainWindow::saveSettings()
 
 void MainWindow::createThread(const QString &password, const bool isDecrypted)
 {
-    m_thread->setSourceDestionationFiles(m_sourceFiles, m_destinationFiles);
+    m_thread->setSourceFiles(m_sourceFiles);
+    m_thread->setDestinationFiles(m_destinationFiles);
     m_thread->setPassword(password);
     m_thread->setIsDecrypted(isDecrypted);
     m_thread->start();

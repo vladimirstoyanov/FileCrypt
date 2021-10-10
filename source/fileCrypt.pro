@@ -16,6 +16,8 @@ TEMPLATE = app
 SOURCES += main.cpp\
     aboutwindow.cpp \
     aes.cpp \
+    file.cpp \
+    fileoperations.cpp \
     mainwindow.cpp \
     path.cpp \
     thread.cpp \
@@ -24,6 +26,8 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     aboutwindow.h \
     aes.h \
+    file.h \
+    fileoperations.h \
     path.h \
     thread.h \
     loadingwindow.h

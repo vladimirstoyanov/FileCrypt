@@ -1,9 +1,7 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include <QCryptographicHash>
 #include <QDebug>
-#include <QFile>
 #include <QMessageBox>
 #include <QThread>
 
@@ -11,32 +9,29 @@
 #include <memory>
 #include <vector>
 
-#include "aes.h"
+#include "file.h"
 
 class Thread : public QThread
 {
     Q_OBJECT
 public:
-    explicit Thread(std::shared_ptr<QAESEncryption>aes, QObject *parent = 0);
+    explicit Thread(QObject *parent = 0);
     virtual  ~Thread ();
 
     void run();
     void setIsDecrypted(const bool isDecrypted);
     void setPassword(const QString &password);
-    void setSourceDestionationFiles(const std::vector<std::shared_ptr<QString>> &source,
-                                    const std::vector<std::shared_ptr<QString>> &destination);
+    void setSourceFiles(const std::vector<File> &source);
+    void setDestinationFiles (const std::vector<QString> &destination);
 
 private:
-    std::shared_ptr<QAESEncryption> m_aes;
-    std::vector<std::shared_ptr<QString>> m_destinationFiles;
+    std::vector<QString>                  m_destinationFiles;
     bool                                  m_decrypted;
     QString                               m_password;
-    std::vector<std::shared_ptr<QString>> m_sourceFiles;
+    std::vector<File>                     m_sourceFiles;
 
-    void encryptFile(const QString &inFile, const QString &outFile, const QString &key);
-    void decryptFile(const QString &inFile, const QString &outFile, const QString &key);
-    QByteArray readFile(const QString &filename);
-    void writeFile (const QString &filename, const QByteArray &buffer);
+    void encryptFiles();
+    void decryptFiles();
 
 signals:
     void processFinished(const bool);

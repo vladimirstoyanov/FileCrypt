@@ -5,14 +5,14 @@ Path::Path()
 
 }
 
-bool Path::getFileNameByPath(const QString &path, QString &filename)
+QString Path::getFileNameByPath(const QString &path)
 {
     QString separator, filename_tmp = "";
     separator = "/";
 
     if (separator.length()<1)
     {
-        return false;
+        return "";
     }
 
     for (int i=path.length()-1; i>=0; --i)
@@ -23,19 +23,19 @@ bool Path::getFileNameByPath(const QString &path, QString &filename)
         }
         if (0==i)
         {
-            return false;
+            return "";
         }
         filename_tmp = path[i] + filename_tmp;
     }
-    filename = filename_tmp;
-    return true;
+    return filename_tmp;
 }
 
-bool Path::getDirectoryNameByPath(const QString &path, QString &dirname)
+QString Path::getDirectoryNameByPath(const QString &path)
 {
     QString separator;
     separator = "/";
 
+    QString dirname = "";
     int index= -1;
     for (int i=path.length()-1; i>=0; --i)
     {
@@ -48,7 +48,7 @@ bool Path::getDirectoryNameByPath(const QString &path, QString &dirname)
     }
     if (-1 == index)
     {
-        return false;
+        return dirname;
     }
 
     for (int i=0; i<=index; ++i)
@@ -56,5 +56,5 @@ bool Path::getDirectoryNameByPath(const QString &path, QString &dirname)
         dirname+=path[i];
     }
 
-    return true;
+    return dirname;
 }

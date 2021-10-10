@@ -9,16 +9,20 @@
 #include <QByteArray>
 #include <QDebug>
 
+
 #ifdef __linux__
 #ifndef __LP64__
 #define do_rdtsc _do_rdtsc
 #endif
 #endif
 
+
 class QAESEncryption : public QObject
 {
     Q_OBJECT
 public:
+    //QAESEncryption ()=default;
+
     enum Aes {
         AES_128,
         AES_192,
@@ -38,12 +42,12 @@ public:
       ISO
     };
 
-    static QByteArray Crypt(QAESEncryption::Aes level, QAESEncryption::Mode mode, const QByteArray &rawText, const QByteArray &key,
+    QByteArray Crypt(QAESEncryption::Aes level, QAESEncryption::Mode mode, const QByteArray &rawText, const QByteArray &key,
                             const QByteArray &iv = NULL, QAESEncryption::Padding padding = QAESEncryption::ISO);
-    static QByteArray Decrypt(QAESEncryption::Aes level, QAESEncryption::Mode mode, const QByteArray &rawText, const QByteArray &key,
+    QByteArray Decrypt(QAESEncryption::Aes level, QAESEncryption::Mode mode, const QByteArray &rawText, const QByteArray &key,
                               const QByteArray &iv = NULL, QAESEncryption::Padding padding = QAESEncryption::ISO);
-    static QByteArray ExpandKey(QAESEncryption::Aes level, QAESEncryption::Mode mode, const QByteArray &key);
-    static QByteArray RemovePadding(const QByteArray &rawText, QAESEncryption::Padding padding);
+    QByteArray ExpandKey(QAESEncryption::Aes level, QAESEncryption::Mode mode, const QByteArray &key);
+    QByteArray RemovePadding(const QByteArray &rawText, QAESEncryption::Padding padding);
 
     QAESEncryption(QAESEncryption::Aes level, QAESEncryption::Mode mode,
                    QAESEncryption::Padding padding = QAESEncryption::ISO);
