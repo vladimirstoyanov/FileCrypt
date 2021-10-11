@@ -4,7 +4,7 @@ File::File(const QString &fileName,
            const QString &fileDirectory,
            const QString &path,
            std::shared_ptr<QAESEncryption>  aes):
-    m_aes (aes/*std::make_shared <QAESEncryption>(QAESEncryption::AES_256, QAESEncryption::CBC)*/),
+    m_aes (aes),
     m_directoryName (fileDirectory),
     m_fileName (fileName),
     m_path (path)

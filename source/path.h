@@ -10,6 +10,9 @@ public:
 
     QString getDirectoryNameByPath  (const QString &path);
     QString getFileNameByPath(const QString &path);
+
+private:
+    QString m_separator;
 };
 
 #endif // PATH_H

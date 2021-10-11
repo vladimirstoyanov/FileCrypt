@@ -165,12 +165,13 @@ void MainWindow::menu_exit()
 
 void MainWindow::menu_setDestination()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Set A Directory"),
-                                                             m_destinationPath,
-                                                             QFileDialog::DontResolveSymlinks | QFileDialog::ReadOnly);
+    QString path = QFileDialog::getExistingDirectory(this,
+                                                     tr("Set A Directory"),
+                                                     m_destinationPath,
+                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (path!="")
     {
-        m_destinationPath = path;
+        m_destinationPath = path + "/";
         saveSettings();
     }
 }

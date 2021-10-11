@@ -1,23 +1,18 @@
 #include "path.h"
 
-Path::Path()
+Path::Path():
+    m_separator("/")
 {
 
 }
 
 QString Path::getFileNameByPath(const QString &path)
 {
-    QString separator, filename_tmp = "";
-    separator = "/";
-
-    if (separator.length()<1)
-    {
-        return "";
-    }
+    QString  fileName = "";
 
     for (int i=path.length()-1; i>=0; --i)
     {
-        if (path[i] == separator[0])
+        if (path[i] == m_separator[0])
         {
             break;
         }
@@ -25,22 +20,19 @@ QString Path::getFileNameByPath(const QString &path)
         {
             return "";
         }
-        filename_tmp = path[i] + filename_tmp;
+        fileName = path[i] + fileName;
     }
-    return filename_tmp;
+    return fileName;
 }
 
 QString Path::getDirectoryNameByPath(const QString &path)
 {
-    QString separator;
-    separator = "/";
-
-    QString dirname = "";
-    int index= -1;
+    QString directoryName = "";
+    int index = -1;
     for (int i=path.length()-1; i>=0; --i)
     {
 
-        if (path[i] == separator[0])
+        if (path[i] == m_separator[0])
         {
             index = i;
             break;
@@ -48,13 +40,13 @@ QString Path::getDirectoryNameByPath(const QString &path)
     }
     if (-1 == index)
     {
-        return dirname;
+        return directoryName;
     }
 
     for (int i=0; i<=index; ++i)
     {
-        dirname+=path[i];
+        directoryName+=path[i];
     }
 
-    return dirname;
+    return directoryName;
 }

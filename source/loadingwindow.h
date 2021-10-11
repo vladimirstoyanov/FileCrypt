@@ -39,7 +39,8 @@ private:
     std::shared_ptr<Ui::LoadingWindow>  m_ui;
     int                                 m_widgetOffset;
 
-    void paintEvent( QPaintEvent* e );
+    void initializeWidgets ();
+    void paintEvent( QPaintEvent* e ); 
 };
 
 #endif // LOADINGWINDOW_H

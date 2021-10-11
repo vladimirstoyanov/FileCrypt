@@ -13,36 +13,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
     , m_widgetOffset (10)
 
 {
-    m_ui->setupUi(this);
-
-    setWindowFlags( Qt::CustomizeWindowHint );
-    setWindowFlags(windowFlags() | Qt::Tool);
-
-    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
-
-   int filenameHeight =  this->height()*m_filenameLabelHeightRatio;
-    m_filenameLabel->setGeometry(m_widgetOffset,
-                                 this->height()*m_filenameLabelHeightRatio,
-                                 this->width()-m_widgetOffset*2,
-                                 m_filenameLabel->height());
-
-
-    m_percentageLabel->setGeometry(m_filenameLabel->x(),
-                                   m_filenameLabel->y() + m_filenameLabel->height() + m_widgetOffset,
-                                   this->width()*m_percentageLabelWidthRatio,
-                                   m_percentageLabel->height());
-
-    m_filenameLabel->setStyleSheet("QLabel { background-color : white; color : black; }");
-    m_percentageLabel->setStyleSheet("QLabel { background-color : white; color : black; }");
-
-    //initialize the gif animation
-    m_loadingGif->setMovie(m_movie.get());
-    m_loadingGif->setAttribute( Qt::WA_TranslucentBackground, true );
-
-    this->setStyleSheet("background-color: white;");
-
-    m_movie->start();
-    m_loadingGif->show();
+    initializeWidgets();
 }
 
 LoadingWindow::~LoadingWindow()
@@ -70,4 +41,38 @@ void LoadingWindow::on_setLable(const QString &label)
 void LoadingWindow::on_percentageUpdated(const int percentage)
 {
     m_percentageLabel->setText(QString::number(percentage) + "%");
+}
+
+
+void LoadingWindow::initializeWidgets ()
+{
+    m_ui->setupUi(this);
+
+    setWindowFlags( Qt::CustomizeWindowHint );
+    setWindowFlags(windowFlags() | Qt::Tool);
+
+    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
+
+    m_filenameLabel->setGeometry(m_widgetOffset,
+                                 this->height()*m_filenameLabelHeightRatio,
+                                 this->width()-m_widgetOffset*2,
+                                 m_filenameLabel->height());
+
+
+    m_percentageLabel->setGeometry(m_filenameLabel->x(),
+                                   m_filenameLabel->y() + m_filenameLabel->height() + m_widgetOffset,
+                                   this->width()*m_percentageLabelWidthRatio,
+                                   m_percentageLabel->height());
+
+    m_filenameLabel->setStyleSheet("QLabel { background-color : white; color : black; }");
+    m_percentageLabel->setStyleSheet("QLabel { background-color : white; color : black; }");
+
+    //initialize the gif animation
+    m_loadingGif->setMovie(m_movie.get());
+    m_loadingGif->setAttribute( Qt::WA_TranslucentBackground, true );
+
+    this->setStyleSheet("background-color: white;");
+
+    m_movie->start();
+    m_loadingGif->show();
 }
