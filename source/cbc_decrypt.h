@@ -12,7 +12,6 @@ public:
     CBCDecrypt(const std::vector<File> &files,
             const QString &destinationDirectory,
             const QString &m_password,
-            std::shared_ptr<QAESEncryption> aes,
             std::shared_ptr<LoadingWindow> loadingWindow);
     virtual ~CBCDecrypt () = default;
     void execute () override;

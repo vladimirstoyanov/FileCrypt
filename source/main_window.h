@@ -16,7 +16,6 @@
 #include <QStandardItemModel>
 #include <QStringList>
 
-#include "aes.h"
 #include "about_window.h"
 #include "cbc_encrypt.h"
 #include "cbc_decrypt.h"
@@ -45,7 +44,6 @@ public slots:
     void on_processFinished();
 
 private:
-    std::shared_ptr<QAESEncryption>         m_aes;
     std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
     std::shared_ptr<CryptographicThread>    m_cryptographicThread;

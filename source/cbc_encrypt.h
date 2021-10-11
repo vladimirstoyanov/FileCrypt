@@ -13,7 +13,6 @@ public:
     CBCEncrypt(const std::vector<File> &files,
             const QString &destinationDirectory,
             const QString &m_password,
-            std::shared_ptr<QAESEncryption> aes,
             std::shared_ptr<LoadingWindow> loadingWindow);
     virtual ~CBCEncrypt () = default;
     void execute () override;

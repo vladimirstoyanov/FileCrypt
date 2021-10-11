@@ -2,15 +2,19 @@
 
 CBCEncrypt::CBCEncrypt(const std::vector<File> &files,
                  const QString &destinationDirectory,
-                 const QString &password ,
-                 std::shared_ptr<QAESEncryption> aes, std::shared_ptr<LoadingWindow> loadingWindow):
-    m_aes (aes),
+                 const QString &password,
+                 std::shared_ptr<LoadingWindow> loadingWindow):
+    m_aes (std::make_shared <QAESEncryption>(QAESEncryption::AES_256, QAESEncryption::CBC)),
     m_destinationDirectory(destinationDirectory),
     m_loadingWindow(loadingWindow),
     m_password(password),
     m_sourceFiles(files)
 {
-
+    //percentage update slot and signal
+    QObject::connect(m_aes.get(),
+                     SIGNAL(percentageUpdated(const int)),
+                     m_loadingWindow.get(),
+                     SLOT(on_percentageUpdated(const int)));
 }
 
 void CBCEncrypt::execute ()

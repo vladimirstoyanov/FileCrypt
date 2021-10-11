@@ -3,7 +3,6 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
-    , m_aes                     (std::make_shared <QAESEncryption>(QAESEncryption::AES_256, QAESEncryption::CBC))
     , m_aboutWindow             (std::make_shared <AboutWindow>())
     , m_currentFile             ("")
     , m_cryptographicThread      (std::make_shared<CryptographicThread> ())
@@ -87,7 +86,6 @@ void MainWindow::initializeActions()
 void MainWindow::initializeThread()
 {
     connect(m_cryptographicThread.get(), SIGNAL(processFinished()),this, SLOT(on_processFinished()));
-    connect(m_aes.get(), SIGNAL(percentageUpdated(const int)),m_loadingWindow.get(),SLOT(on_percentageUpdated(const int)));
 }
 
 //ToDo: split the implementation of menu_open method
@@ -290,7 +288,7 @@ void MainWindow::on_encryptButton_clicked()
         return;
     }
 
-    startCryptographyThread(std::make_shared<CBCEncrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
+    startCryptographyThread(std::make_shared<CBCEncrypt> (getFiles(), m_destinationPath, password, m_loadingWindow));
 }
 
 //decrypt button
@@ -302,7 +300,7 @@ void MainWindow::on_decryptButton_clicked()
         return;
     }
 
-    startCryptographyThread(std::make_shared<CBCDecrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
+    startCryptographyThread(std::make_shared<CBCDecrypt> (getFiles(), m_destinationPath, password, m_loadingWindow));
 }
 
 //add data to tableView widget
