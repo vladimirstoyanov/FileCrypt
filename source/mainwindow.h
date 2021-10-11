@@ -18,11 +18,15 @@
 
 #include "aes.h"
 #include "aboutwindow.h"
+#include "encrypt.h"
+#include "decrypt.h"
 #include "file.h"
 #include "fileoperations.h"
 #include "loadingwindow.h"
 #include "path.h"
-#include "cryptography_thread.h"
+#include "cryptography.h"
+#include "cryptographic_thread.h"
+
 
 namespace Ui
 {
@@ -38,39 +42,36 @@ public:
     ~MainWindow();
 
 public slots:
-    void on_processFinished(const bool isEncrypt);
+    void on_processFinished();
 
 private:
     std::shared_ptr<QAESEncryption>         m_aes;
     std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
-    std::vector<QString>                    m_destinationFiles;
+    std::shared_ptr<CryptographicThread>    m_cryptographicThread;
     QString                                 m_destinationPath;
     QString                                 m_fileDir;
     FileOperations                          m_fileOperations;
     std::shared_ptr<LoadingWindow>          m_loadingWindow;
     std::shared_ptr<QStandardItemModel>     m_model;
     int                                     m_modelFilePathColumnId;
-    std::vector<File>                       m_sourceFiles;
     Path                                    m_path;
-    std::shared_ptr<CryptographyThread>     m_cryptographyThread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
     int                                     m_widgetOffset;
 
     void addDataToTableView(const QString &path);
-    void encryptDecryptHandle (const QString& dialogMessage,const bool isDecrypted);
-    void deleteEncryptionFileNameList();
-
+    std::vector<File> getFiles ();
     void initializeModelTableView();
     void initializeActions();
     void initializeThread ();
     void loadSettings();
+    bool prepareCryptography (QString& password);
     bool passwordDialogHandle (const QString &dialogText, QString &password);
-    void prepareCryptographyThread ();
     void resizeEvent(QResizeEvent *event);
     void saveDialog();
     void saveSettings();
-    void startCryptographyThread(const QString &password, const bool isDecrypted);
+    void showLoadingWindow();
+    void startCryptographyThread (std::shared_ptr<ICryptography> cryptography);
 
 private slots:
     void menu_about();

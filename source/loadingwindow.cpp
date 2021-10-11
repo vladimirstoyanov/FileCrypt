@@ -20,6 +20,11 @@ LoadingWindow::~LoadingWindow()
 {
 }
 
+void LoadingWindow::setCurrentFile (const QString & currentFile)
+{
+    m_filenameLabel->setText(currentFile);
+}
+
 void LoadingWindow::paintEvent( QPaintEvent* e )
 {
     QPainter painter(this);
@@ -31,11 +36,6 @@ void LoadingWindow::paintEvent( QPaintEvent* e )
     painter.setPen(linepen);
 
     painter.drawRect(0,0,this->width(), this->height());
-}
-
-void LoadingWindow::on_setLable(const QString &label)
-{
-    m_filenameLabel->setText(label);
 }
 
 void LoadingWindow::on_percentageUpdated(const int percentage)

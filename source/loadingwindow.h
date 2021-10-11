@@ -25,8 +25,9 @@ public:
     explicit LoadingWindow(QWidget *parent = 0);
     virtual ~LoadingWindow();
 
+    void setCurrentFile (const QString & currentFile);
+
 public slots:
-    void on_setLable(const QString &label);
     void on_percentageUpdated (const int percentage);
 
 private:

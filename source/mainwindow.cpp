@@ -6,12 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_aes                     (std::make_shared <QAESEncryption>(QAESEncryption::AES_256, QAESEncryption::CBC))
     , m_aboutWindow             (std::make_shared <AboutWindow>())
     , m_currentFile             ("")
+    , m_cryptographicThread      (std::make_shared<CryptographicThread> ())
     , m_destinationPath         ("")
     , m_fileDir                 ("")
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
     , m_modelFilePathColumnId   (0)
-    , m_cryptographyThread      (std::make_shared<CryptographyThread> ())
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
     , m_widgetOffset            (5)
 {
@@ -25,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    m_cryptographyThread->deleteLater();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -87,8 +86,7 @@ void MainWindow::initializeActions()
 
 void MainWindow::initializeThread()
 {
-    connect(m_cryptographyThread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
-    connect(m_cryptographyThread.get(), SIGNAL(setLable(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
+    connect(m_cryptographicThread.get(), SIGNAL(processFinished()),this, SLOT(on_processFinished()));
     connect(m_aes.get(), SIGNAL(percentageUpdated(const int)),m_loadingWindow.get(),SLOT(on_percentageUpdated(const int)));
 }
 
@@ -169,9 +167,13 @@ void MainWindow::menu_setDestination()
                                                      tr("Set A Directory"),
                                                      m_destinationPath,
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (path!="")
+    if (path!="" && m_destinationPath.length()>0)
     {
-        m_destinationPath = path + "/";
+        m_destinationPath = path;
+        if (m_destinationPath[m_destinationPath.length()-1] != "/")
+        {
+            m_destinationPath+="/";
+        }
         saveSettings();
     }
 }
@@ -212,6 +214,7 @@ void MainWindow::on_removeButton_clicked()
     }
 }
 
+
 bool MainWindow::passwordDialogHandle (const QString &dialogText, QString &password)
 {
     bool okDialogButton = true;
@@ -235,62 +238,77 @@ bool MainWindow::passwordDialogHandle (const QString &dialogText, QString &passw
     return true;
 }
 
-void MainWindow::prepareCryptographyThread ()
+
+std::vector<File> MainWindow::getFiles ()
 {
     QModelIndex mi;
     QVariant v;
-
-    deleteEncryptionFileNameList();
-
+    std::vector<File> files;
     for (int i=0; i<m_model->rowCount(); ++i)
     {
         mi = m_model->index(i,m_modelFilePathColumnId);
         v=mi.data();
         QString fileName=m_path.getFileNameByPath(v.toString());
-        QString destPath = m_destinationPath + fileName;
 
-        File file(fileName, m_path.getDirectoryNameByPath(fileName), v.toString(), m_aes);
+        File file(fileName, m_path.getDirectoryNameByPath(fileName), v.toString());
 
-        m_sourceFiles.push_back(file);
-        m_destinationFiles.push_back(destPath);
+        files.push_back(file);
     }
+
+    return files;
 }
 
-void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool isDecrypted)
+bool MainWindow::prepareCryptography (QString& password)
 {
-    QString password = "";
-
-    if (!passwordDialogHandle(dialogMessage, password))
-    {
-        return;
-    }
-
     if (0==m_model->rowCount())
     {
         QMessageBox::information(0, "", "Please add some file(s)!");
-        return;
+        return false;
     }
 
-    prepareCryptographyThread();
-    startCryptographyThread(password, isDecrypted);
+    if (!passwordDialogHandle("Password: ", password))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void MainWindow::startCryptographyThread (std::shared_ptr<ICryptography> cryptography)
+{
+     m_cryptographicThread->setCryptography(cryptography);
+     m_cryptographicThread->start();
+     showLoadingWindow();
 }
 
 //encrypt button
 void MainWindow::on_encryptButton_clicked()
 {
-    encryptDecryptHandle("Encrypt", true);
+    QString password = "";
+    if (!prepareCryptography(password))
+    {
+        return;
+    }
+
+    startCryptographyThread(std::make_shared<Encrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
 }
 
 //decrypt button
 void MainWindow::on_decryptButton_clicked()
 {
-    encryptDecryptHandle("Decrypt", false);
+    QString password = "";
+    if (!prepareCryptography(password))
+    {
+        return;
+    }
+
+    startCryptographyThread(std::make_shared<Decrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
 }
 
 //add data to tableView widget
 void MainWindow::addDataToTableView(const QString &fileName)
 {
-    //check is fileName exist
+    //check if fileName exist
     QModelIndex mi;
     QVariant v;
     for (int i=0; i<m_model->rowCount(); ++i)
@@ -311,6 +329,7 @@ void MainWindow::addDataToTableView(const QString &fileName)
     m_model->item(m_model->rowCount()-1,m_modelFilePathColumnId)->setEditable(false);
 }
 
+//ToDo: move the implementation to another class
 void MainWindow::loadSettings()
 {
     QFile file("settings");
@@ -346,6 +365,7 @@ void MainWindow::loadSettings()
     file.close();
 }
 
+//ToDo: move the implementation to another class
 void MainWindow::saveSettings()
 {
     QFile file( "settings" );
@@ -358,34 +378,21 @@ void MainWindow::saveSettings()
     file.close();
 }
 
-void MainWindow::startCryptographyThread(const QString &password, const bool isDecrypted)
+void MainWindow::showLoadingWindow()
 {
-    m_cryptographyThread->setSourceFiles(m_sourceFiles);
-    m_cryptographyThread->setDestinationFiles(m_destinationFiles);
-    m_cryptographyThread->setPassword(password);
-    m_cryptographyThread->setIsDecrypted(isDecrypted);
-    m_cryptographyThread->start();
-
     m_loadingWindow->move(((this->geometry().x() + this->width()/2) - m_loadingWindow->width()/2),
                 ((this->geometry().y() + this->height()/2) - m_loadingWindow->height()/2));
-
     this->setEnabled(false);
     m_loadingWindow->show();
 }
 
-void MainWindow::on_processFinished(const bool isEncrypt)
+void MainWindow::on_processFinished()
 {
     this->setEnabled(true);
     m_loadingWindow->close();
-    m_cryptographyThread->terminate();
-    if (isEncrypt)
-    {
-        QMessageBox::information(this,"","Encryption has been completed successfully.");
-    }
-    else
-    {
-        QMessageBox::information(this,"","Decryption has been completed successfully.");
-    }
+    m_cryptographicThread->terminate();
+
+    QMessageBox::information(this,"","Operation has been finished.");
 }
 
 
@@ -414,19 +421,6 @@ void MainWindow::saveDialog()
 
             stream<<v.toString() + "\n";
         }
-        deleteEncryptionFileNameList();
     }
     file.close();
-}
-
-void MainWindow::deleteEncryptionFileNameList()
-{
-    if (m_sourceFiles.size() >0)
-    {
-        m_sourceFiles.clear();
-    }
-    if (m_destinationFiles.size() >0)
-    {
-        m_destinationFiles.clear();
-    }
 }

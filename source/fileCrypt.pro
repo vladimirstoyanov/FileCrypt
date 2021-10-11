@@ -16,7 +16,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
     aboutwindow.cpp \
     aes.cpp \
-    cryptography_thread.cpp \
+    cryptographic_thread.cpp \
+    cryptography.cpp \
+    decrypt.cpp \
+    encrypt.cpp \
     file.cpp \
     fileoperations.cpp \
     mainwindow.cpp \
@@ -26,7 +29,10 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     aboutwindow.h \
     aes.h \
-    cryptography_thread.h \
+    cryptographic_thread.h \
+    cryptography.h \
+    decrypt.h \
+    encrypt.h \
     file.h \
     fileoperations.h \
     path.h \
