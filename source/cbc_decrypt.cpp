@@ -1,6 +1,6 @@
-#include "decrypt.h"
+#include "cbc_decrypt.h"
 
-Decrypt::Decrypt(const std::vector<File> &files,
+CBCDecrypt::CBCDecrypt(const std::vector<File> &files,
                  const QString &destinationDirectory,
                  const QString &password,
                  std::shared_ptr<QAESEncryption> aes,
@@ -14,7 +14,7 @@ Decrypt::Decrypt(const std::vector<File> &files,
 
 }
 
-void Decrypt::execute ()
+void CBCDecrypt::execute ()
 {
     for (unsigned int i = 0; i< m_sourceFiles.size(); ++i)
     {
@@ -23,7 +23,7 @@ void Decrypt::execute ()
     }
 }
 
-void Decrypt::decrypt(const unsigned int index)
+void CBCDecrypt::decrypt(const unsigned int index)
 {
     QString outFile = m_destinationDirectory +  m_sourceFiles[index].getFileName();
 

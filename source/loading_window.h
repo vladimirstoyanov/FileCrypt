@@ -1,5 +1,5 @@
-#ifndef LOADINGWINDOW_H
-#define LOADINGWINDOW_H
+#ifndef LOADING_WINDOW_H
+#define LOADING_WINDOW_H
 
 #include <memory>
 
@@ -44,4 +44,4 @@ private:
     void paintEvent( QPaintEvent* e ); 
 };
 
-#endif // LOADINGWINDOW_H
+#endif // LOADING_WINDOW_H

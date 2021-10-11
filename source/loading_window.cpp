@@ -1,5 +1,5 @@
-#include "loadingwindow.h"
-#include "ui_loadingwindow.h"
+#include "loading_window.h"
+#include "ui_loading_window.h"
 
 LoadingWindow::LoadingWindow(QWidget *parent) :
     QWidget(parent)

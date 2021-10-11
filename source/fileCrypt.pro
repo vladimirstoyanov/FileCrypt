@@ -14,32 +14,34 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    aboutwindow.cpp \
+    about_window.cpp \
     aes.cpp \
+    cbc_decrypt.cpp \
+    cbc_encrypt.cpp \
     cryptographic_thread.cpp \
     cryptography.cpp \
-    decrypt.cpp \
-    encrypt.cpp \
     file.cpp \
-    fileoperations.cpp \
-    mainwindow.cpp \
+    file_operations.cpp \
+    loading_window.cpp \
+    main_window.cpp \
     null_cryptography.cpp \
-    path.cpp \
-    loadingwindow.cpp
+    path.cpp
 
-HEADERS  += mainwindow.h \
-    aboutwindow.h \
+HEADERS  += \
+    about_window.h \
     aes.h \
+    cbc_decrypt.h \
+    cbc_encrypt.h \
     cryptographic_thread.h \
     cryptography.h \
-    decrypt.h \
-    encrypt.h \
     file.h \
-    fileoperations.h \
+    file_operations.h \
+    loading_window.h \
+    main_window.h \
     null_cryptography.h \
-    path.h \
-    loadingwindow.h
+    path.h
 
-FORMS    += mainwindow.ui \
-    aboutwindow.ui \
-    loadingwindow.ui
+FORMS    += \
+    about_window.ui \
+    loading_window.ui \
+    main_window.ui

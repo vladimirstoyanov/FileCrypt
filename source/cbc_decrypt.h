@@ -1,20 +1,20 @@
-#ifndef DECRYPT_H
-#define DECRYPT_H
+#ifndef CBC_DECRYPT_H
+#define CBC_DECRYPT_H
 
 #include "aes.h"
 #include "cryptography.h"
-#include "fileoperations.h"
-#include "loadingwindow.h"
+#include "file_operations.h"
+#include "loading_window.h"
 
-class Decrypt: public ICryptography
+class CBCDecrypt: public ICryptography
 {
 public:
-    Decrypt(const std::vector<File> &files,
+    CBCDecrypt(const std::vector<File> &files,
             const QString &destinationDirectory,
             const QString &m_password,
             std::shared_ptr<QAESEncryption> aes,
             std::shared_ptr<LoadingWindow> loadingWindow);
-
+    virtual ~CBCDecrypt () = default;
     void execute () override;
 
 private:
@@ -28,4 +28,4 @@ private:
     void decrypt(const unsigned int index);
 };
 
-#endif // DECRYPT_H
+#endif // CBC_DECRYPT_H

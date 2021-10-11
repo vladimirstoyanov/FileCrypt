@@ -1,5 +1,5 @@
-#ifndef FILEOPERATIONS_H
-#define FILEOPERATIONS_H
+#ifndef FILE_OPERATIONS_H
+#define FILE_OPERATIONS_H
 
 #include <QFile>
 #include <QString>
@@ -13,4 +13,4 @@ public:
     void writeFile (const QString &filename, const QByteArray &buffer);
 };
 
-#endif // FILEOPERATIONS_H
+#endif // FILE_OPERATIONS_H

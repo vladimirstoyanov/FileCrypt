@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "main_window.h"
+#include "ui_main_window.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -290,7 +290,7 @@ void MainWindow::on_encryptButton_clicked()
         return;
     }
 
-    startCryptographyThread(std::make_shared<Encrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
+    startCryptographyThread(std::make_shared<CBCEncrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
 }
 
 //decrypt button
@@ -302,7 +302,7 @@ void MainWindow::on_decryptButton_clicked()
         return;
     }
 
-    startCryptographyThread(std::make_shared<Decrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
+    startCryptographyThread(std::make_shared<CBCDecrypt> (getFiles(), m_destinationPath, password, m_aes, m_loadingWindow));
 }
 
 //add data to tableView widget

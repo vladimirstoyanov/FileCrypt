@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
 #include <math.h>
 #include <memory>
@@ -17,12 +17,12 @@
 #include <QStringList>
 
 #include "aes.h"
-#include "aboutwindow.h"
-#include "encrypt.h"
-#include "decrypt.h"
+#include "about_window.h"
+#include "cbc_encrypt.h"
+#include "cbc_decrypt.h"
 #include "file.h"
-#include "fileoperations.h"
-#include "loadingwindow.h"
+#include "file_operations.h"
+#include "loading_window.h"
 #include "path.h"
 #include "cryptography.h"
 #include "cryptographic_thread.h"
@@ -88,4 +88,4 @@ private slots:
     void on_removeAllButton_clicked();
 };
 
-#endif // MAINWINDOW_H
+#endif // MAIN_WINDOW_H

@@ -1,6 +1,6 @@
-#include "encrypt.h"
+#include "cbc_encrypt.h"
 
-Encrypt::Encrypt(const std::vector<File> &files,
+CBCEncrypt::CBCEncrypt(const std::vector<File> &files,
                  const QString &destinationDirectory,
                  const QString &password ,
                  std::shared_ptr<QAESEncryption> aes, std::shared_ptr<LoadingWindow> loadingWindow):
@@ -13,7 +13,7 @@ Encrypt::Encrypt(const std::vector<File> &files,
 
 }
 
-void Encrypt::execute ()
+void CBCEncrypt::execute ()
 {
     for (unsigned int i = 0; i< m_sourceFiles.size(); ++i)
     {
@@ -22,7 +22,7 @@ void Encrypt::execute ()
     }
 }
 
-void Encrypt::encrypt(const unsigned int index)
+void CBCEncrypt::encrypt(const unsigned int index)
 {
     QString outFile = m_destinationDirectory +  m_sourceFiles[index].getFileName();
 

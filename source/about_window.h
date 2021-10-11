@@ -1,5 +1,5 @@
-#ifndef ABOUTWINDOW_H
-#define ABOUTWINDOW_H
+#ifndef ABOUT_WINDOW_H
+#define ABOUT_WINDOW_H
 
 #include <QApplication>
 #include <QCloseEvent>
@@ -27,4 +27,4 @@ private:
     void setupGui();
 };
 
-#endif // ABOUTWINDOW_H
+#endif // ABOUT_WINDOW_H

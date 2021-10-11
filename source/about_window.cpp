@@ -1,5 +1,5 @@
-#include "aboutwindow.h"
-#include "ui_aboutwindow.h"
+#include "about_window.h"
+#include "ui_about_window.h"
 
 AboutWindow::AboutWindow(QWidget *parent) :
     QWidget(parent),
