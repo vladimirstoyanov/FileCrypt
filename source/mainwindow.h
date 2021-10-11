@@ -22,7 +22,7 @@
 #include "fileoperations.h"
 #include "loadingwindow.h"
 #include "path.h"
-#include "thread.h"
+#include "cryptography_thread.h"
 
 namespace Ui
 {
@@ -53,12 +53,11 @@ private:
     int                                     m_modelFilePathColumnId;
     std::vector<File>                       m_sourceFiles;
     Path                                    m_path;
-    std::shared_ptr<Thread>                 m_thread;
+    std::shared_ptr<CryptographyThread>     m_cryptographyThread;
     std::shared_ptr<Ui::MainWindow>         m_ui;
     int                                     m_widgetOffset;
 
     void addDataToTableView(const QString &path);
-    void createThread(const QString &password, const bool isDecrypted);
     void encryptDecryptHandle (const QString& dialogMessage,const bool isDecrypted);
     void deleteEncryptionFileNameList();
 
@@ -67,9 +66,11 @@ private:
     void initializeThread ();
     void loadSettings();
     bool passwordDialogHandle (const QString &dialogText, QString &password);
+    void prepareCryptographyThread ();
     void resizeEvent(QResizeEvent *event);
     void saveDialog();
     void saveSettings();
+    void startCryptographyThread(const QString &password, const bool isDecrypted);
 
 private slots:
     void menu_about();

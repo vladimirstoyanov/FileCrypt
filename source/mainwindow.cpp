@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
     , m_modelFilePathColumnId   (0)
-    , m_thread                  (std::make_shared<Thread> ())
+    , m_cryptographyThread      (std::make_shared<CryptographyThread> ())
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
     , m_widgetOffset            (5)
 {
@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    m_thread->deleteLater();
+    m_cryptographyThread->deleteLater();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -87,8 +87,8 @@ void MainWindow::initializeActions()
 
 void MainWindow::initializeThread()
 {
-    connect(m_thread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
-    connect(m_thread.get(), SIGNAL(setLable(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
+    connect(m_cryptographyThread.get(), SIGNAL(processFinished(const bool)),this, SLOT(on_processFinished(const bool)));
+    connect(m_cryptographyThread.get(), SIGNAL(setLable(QString)),m_loadingWindow.get(),SLOT(on_setLable(const QString&)));
     connect(m_aes.get(), SIGNAL(percentageUpdated(const int)),m_loadingWindow.get(),SLOT(on_percentageUpdated(const int)));
 }
 
@@ -235,22 +235,8 @@ bool MainWindow::passwordDialogHandle (const QString &dialogText, QString &passw
     return true;
 }
 
-//ToDo: split the below method to two methods
-void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool isDecrypted)
+void MainWindow::prepareCryptographyThread ()
 {
-    QString password = "";
-
-    if (!passwordDialogHandle(dialogMessage, password))
-    {
-        return;
-    }
-
-    if (0==m_model->rowCount())
-    {
-                QMessageBox::information(0, "", "Please add some file(s)!");
-                return;
-    }
-
     QModelIndex mi;
     QVariant v;
 
@@ -268,8 +254,25 @@ void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool 
         m_sourceFiles.push_back(file);
         m_destinationFiles.push_back(destPath);
     }
+}
 
-    createThread(password, isDecrypted);
+void MainWindow::encryptDecryptHandle (const QString& dialogMessage, const bool isDecrypted)
+{
+    QString password = "";
+
+    if (!passwordDialogHandle(dialogMessage, password))
+    {
+        return;
+    }
+
+    if (0==m_model->rowCount())
+    {
+        QMessageBox::information(0, "", "Please add some file(s)!");
+        return;
+    }
+
+    prepareCryptographyThread();
+    startCryptographyThread(password, isDecrypted);
 }
 
 //encrypt button
@@ -278,6 +281,7 @@ void MainWindow::on_encryptButton_clicked()
     encryptDecryptHandle("Encrypt", true);
 }
 
+//decrypt button
 void MainWindow::on_decryptButton_clicked()
 {
     encryptDecryptHandle("Decrypt", false);
@@ -354,13 +358,13 @@ void MainWindow::saveSettings()
     file.close();
 }
 
-void MainWindow::createThread(const QString &password, const bool isDecrypted)
+void MainWindow::startCryptographyThread(const QString &password, const bool isDecrypted)
 {
-    m_thread->setSourceFiles(m_sourceFiles);
-    m_thread->setDestinationFiles(m_destinationFiles);
-    m_thread->setPassword(password);
-    m_thread->setIsDecrypted(isDecrypted);
-    m_thread->start();
+    m_cryptographyThread->setSourceFiles(m_sourceFiles);
+    m_cryptographyThread->setDestinationFiles(m_destinationFiles);
+    m_cryptographyThread->setPassword(password);
+    m_cryptographyThread->setIsDecrypted(isDecrypted);
+    m_cryptographyThread->start();
 
     m_loadingWindow->move(((this->geometry().x() + this->width()/2) - m_loadingWindow->width()/2),
                 ((this->geometry().y() + this->height()/2) - m_loadingWindow->height()/2));
@@ -373,7 +377,7 @@ void MainWindow::on_processFinished(const bool isEncrypt)
 {
     this->setEnabled(true);
     m_loadingWindow->close();
-    m_thread->terminate();
+    m_cryptographyThread->terminate();
     if (isEncrypt)
     {
         QMessageBox::information(this,"","Encryption has been completed successfully.");

@@ -1,6 +1,6 @@
-#include "thread.h"
+#include "cryptography_thread.h"
 
-Thread::Thread(QObject *parent) :
+CryptographyThread::CryptographyThread(QObject *parent) :
     QThread(parent)
     , m_decrypted(false)
     , m_password ("")
@@ -8,12 +8,12 @@ Thread::Thread(QObject *parent) :
     this->setTerminationEnabled(true);
 }
 
-Thread::~Thread ()
+CryptographyThread::~CryptographyThread ()
 {
 
 }
 
-void Thread::setSourceFiles(const std::vector<File> &source)
+void CryptographyThread::setSourceFiles(const std::vector<File> &source)
 {
     m_sourceFiles.clear();
     for (unsigned int i=0; i<source.size(); ++i)
@@ -22,7 +22,7 @@ void Thread::setSourceFiles(const std::vector<File> &source)
     }
 }
 
-void Thread::setDestinationFiles (const std::vector<QString> &destination)
+void CryptographyThread::setDestinationFiles (const std::vector<QString> &destination)
 {
     m_destinationFiles.clear();
     for (unsigned int i=0; i<destination.size(); ++i)
@@ -32,12 +32,12 @@ void Thread::setDestinationFiles (const std::vector<QString> &destination)
 
 }
 
-void Thread::setIsDecrypted(const bool isDecrypted)
+void CryptographyThread::setIsDecrypted(const bool isDecrypted)
 {
     this->m_decrypted = isDecrypted;
 }
 
-void Thread::run()
+void CryptographyThread::run()
 {
     qDebug()<<__PRETTY_FUNCTION__<<this->currentThreadId();
 
@@ -62,13 +62,13 @@ void Thread::run()
     exec();
 }
 
-void Thread::setPassword(const QString &password)
+void CryptographyThread::setPassword(const QString &password)
 {
     this->m_password = password;
 }
 
 
-void Thread::decryptFiles()
+void CryptographyThread::decryptFiles()
 {
     for (unsigned int i = 0; i<m_sourceFiles.size(); ++i)
     {
@@ -77,7 +77,7 @@ void Thread::decryptFiles()
     }
 }
 
-void Thread::encryptFiles()
+void CryptographyThread::encryptFiles()
 {
     for (unsigned int i = 0; i< m_sourceFiles.size(); ++i)
     {

@@ -16,20 +16,20 @@ TEMPLATE = app
 SOURCES += main.cpp\
     aboutwindow.cpp \
     aes.cpp \
+    cryptography_thread.cpp \
     file.cpp \
     fileoperations.cpp \
     mainwindow.cpp \
     path.cpp \
-    thread.cpp \
     loadingwindow.cpp
 
 HEADERS  += mainwindow.h \
     aboutwindow.h \
     aes.h \
+    cryptography_thread.h \
     file.h \
     fileoperations.h \
     path.h \
-    thread.h \
     loadingwindow.h
 
 FORMS    += mainwindow.ui \

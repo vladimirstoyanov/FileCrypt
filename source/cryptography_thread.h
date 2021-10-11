@@ -1,5 +1,5 @@
-#ifndef THREAD_H
-#define THREAD_H
+#ifndef CRYPTOGRAPHY_THREAD_H
+#define CRYPTOGRAPHY_THREAD_H
 
 #include <QDebug>
 #include <QMessageBox>
@@ -11,12 +11,12 @@
 
 #include "file.h"
 
-class Thread : public QThread
+class CryptographyThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit Thread(QObject *parent = 0);
-    virtual  ~Thread ();
+    explicit CryptographyThread(QObject *parent = 0);
+    virtual  ~CryptographyThread ();
 
     void run();
     void setIsDecrypted(const bool isDecrypted);
@@ -39,4 +39,4 @@ signals:
 
 };
 
-#endif // THREAD_H
+#endif // CRYPTOGRAPHY_THREAD_H
