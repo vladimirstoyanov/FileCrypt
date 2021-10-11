@@ -2,7 +2,7 @@
 
 CryptographicThread::CryptographicThread(QObject *parent):
     QThread(parent),
-    cryptography(nullptr)
+    cryptography(std::make_shared<NullCryptography> ())
 {
     this->setTerminationEnabled(true);
 }

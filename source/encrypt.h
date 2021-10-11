@@ -19,11 +19,11 @@ public:
 
 private:
     std::shared_ptr<QAESEncryption>  m_aes;
-    QString            m_destinationDirectory;
-    FileOperations     m_fileOperations;
-    std::shared_ptr<LoadingWindow> m_loadingWindow;
-    QString            m_password;
-    std::vector <File> m_sourceFiles;
+    QString                          m_destinationDirectory;
+    FileOperations                   m_fileOperations;
+    std::shared_ptr<LoadingWindow>   m_loadingWindow;
+    QString                          m_password;
+    std::vector <File>               m_sourceFiles;
 
     void encrypt(const unsigned int index);
 };

@@ -23,6 +23,7 @@ SOURCES += main.cpp\
     file.cpp \
     fileoperations.cpp \
     mainwindow.cpp \
+    null_cryptography.cpp \
     path.cpp \
     loadingwindow.cpp
 
@@ -35,6 +36,7 @@ HEADERS  += mainwindow.h \
     encrypt.h \
     file.h \
     fileoperations.h \
+    null_cryptography.h \
     path.h \
     loadingwindow.h
 

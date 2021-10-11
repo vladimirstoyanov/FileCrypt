@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "cryptography.h"
+#include "null_cryptography.h"
 
 class CryptographicThread : public QThread
 {
