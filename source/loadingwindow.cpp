@@ -10,7 +10,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
     , m_percentageLabel (std::make_shared<QLabel>(this))
     , m_percentageLabelWidthRatio(0.25)
     , m_ui(std::make_shared<Ui::LoadingWindow> ())
-    , m_widgetOffset (5)
+    , m_widgetOffset (10)
 
 {
     m_ui->setupUi(this);
@@ -20,7 +20,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 
     this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
 
-    int filenameHeight =  this->height()*m_filenameLabelHeightRatio;
+   int filenameHeight =  this->height()*m_filenameLabelHeightRatio;
     m_filenameLabel->setGeometry(m_widgetOffset,
                                  this->height()*m_filenameLabelHeightRatio,
                                  this->width()-m_widgetOffset*2,
@@ -37,6 +37,7 @@ LoadingWindow::LoadingWindow(QWidget *parent) :
 
     //initialize the gif animation
     m_loadingGif->setMovie(m_movie.get());
+    m_loadingGif->setAttribute( Qt::WA_TranslucentBackground, true );
 
     this->setStyleSheet("background-color: white;");
 
