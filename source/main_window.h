@@ -26,7 +26,6 @@
 #include "cryptography.h"
 #include "cryptographic_thread.h"
 
-
 namespace Ui
 {
     class MainWindow;
@@ -61,13 +60,13 @@ private:
     std::vector<File> getFiles ();
     void initializeModelTableView();
     void initializeActions();
-    void initializeThread ();
     void loadSettings();
     bool prepareCryptography (QString& password);
     bool passwordDialogHandle (const QString &dialogText, QString &password);
     void resizeEvent(QResizeEvent *event);
     void saveDialog();
     void saveSettings();
+    void setCryptographicThreadConnections ();
     void showLoadingWindow();
     void startCryptographyThread (std::shared_ptr<ICryptography> cryptography);
 

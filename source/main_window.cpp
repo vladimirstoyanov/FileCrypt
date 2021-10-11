@@ -83,7 +83,7 @@ void MainWindow::initializeActions()
     connect(m_ui->actionAbout, SIGNAL(triggered()), this, SLOT(menu_about()));
 }
 
-void MainWindow::initializeThread()
+void MainWindow::setCryptographicThreadConnections()
 {
     connect(m_cryptographicThread.get(), SIGNAL(processFinished()),this, SLOT(on_processFinished()));
 }

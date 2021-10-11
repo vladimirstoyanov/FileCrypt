@@ -9,8 +9,8 @@ class FileOperations
 public:
     FileOperations();
 
-    QByteArray readFile(const QString &filename);
-    void writeFile (const QString &filename, const QByteArray &buffer);
+    QByteArray  readFile(const QString &filename);
+    bool        writeFile (const QString &filename, const QByteArray &buffer);
 };
 
 #endif // FILE_OPERATIONS_H

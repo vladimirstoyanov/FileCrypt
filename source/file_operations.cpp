@@ -16,13 +16,14 @@ QByteArray FileOperations::readFile (const QString &filename)
     return buffer;
 }
 
-void FileOperations::writeFile (const QString &filename, const QByteArray &buffer)
+bool FileOperations::writeFile(const QString &filename, const QByteArray &buffer)
 {
     QFile outFile(filename);
     if (!outFile.open(QIODevice::WriteOnly))
     {
-            return;
+            return false;
     }
     outFile.write(buffer);
     outFile.close();
+    return true;
 }
