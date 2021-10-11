@@ -537,7 +537,8 @@ QByteArray QAESEncryption::encode(const QByteArray &rawText, const QByteArray &k
         int percentage = 0;
         int oldPercentage = 0;
         double size_ = alignedText.size();
-        percentageUpdated(percentage);
+        ret.reserve(alignedText.size());
+        emit percentageUpdated(percentage);
         for(int i=0; i < alignedText.size(); i+= m_blocklen) {
             alignedText.replace(i, m_blocklen, byteXor(alignedText.mid(i, m_blocklen),ivTemp));
             ret.append(cipher(expandedKey, alignedText.mid(i, m_blocklen)));
@@ -546,10 +547,10 @@ QByteArray QAESEncryption::encode(const QByteArray &rawText, const QByteArray &k
             if (oldPercentage!=percentage)
             {
                 oldPercentage = percentage;
-                percentageUpdated(percentage);
+                emit percentageUpdated(percentage);
             }
         }
-        percentageUpdated(100);
+        emit percentageUpdated(100);
         return ret;
     }
     break;
@@ -597,9 +598,10 @@ QByteArray QAESEncryption::decode(const QByteArray &rawText, const QByteArray &k
     case CBC: {
             QByteArray ivTemp(iv);
             int percentage = 0;
-            percentageUpdated(percentage);
+            emit percentageUpdated(percentage);
             int oldPercentage = 0;
             double size_ = rawText.size();
+            ret.reserve(rawText.size());
             for(int i=0; i < rawText.size(); i+= m_blocklen){
                 ret.append(invCipher(expandedKey, rawText.mid(i, m_blocklen)));
                 ret.replace(i, m_blocklen, byteXor(ret.mid(i, m_blocklen),ivTemp));
@@ -608,10 +610,10 @@ QByteArray QAESEncryption::decode(const QByteArray &rawText, const QByteArray &k
                 if (oldPercentage!=percentage)
                 {
                     oldPercentage = percentage;
-                    percentageUpdated(percentage);
+                    emit percentageUpdated(percentage);
                 }
             }
-            percentageUpdated(100);
+            emit percentageUpdated(100);
         }
         break;
     case CFB: {
