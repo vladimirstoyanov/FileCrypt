@@ -87,40 +87,24 @@ void MainWindow::setCryptographicThreadConnections()
     connect(m_cryptographicThread.get(), SIGNAL(processFinished()),this, SLOT(on_processFinished()));
 }
 
-//ToDo: split the implementation of menu_open method
+//Menu: File->Open
 void MainWindow::menu_open()
 {
       QString filepath = QFileDialog::getOpenFileName(this, tr("List of Encripted File(s)"),"",tr("*.lef (*.lef)"));
 
-      QFile file(filepath);
-      if(!file.open(QIODevice::ReadOnly))
-      {
-          return;
-      }
-
-      QTextStream in(&file);
-
-      if (in.atEnd())
-      {
-          file.close();
-          return;
-      }
       m_currentFile = filepath;
-      while(!in.atEnd())
+      std::vector<QString> lines = m_fileOperations.readFileLines(filepath);
+
+      for (auto &item : lines)
       {
-        QString line = in.readLine();
-        QFile file1(line);
-        if(!file1.open(QIODevice::ReadOnly))
+        if (m_fileOperations.isFileExist(item))
         {
-            QMessageBox::critical(0, "Error!", line + " not exist.");
-            continue;
+            addDataToTableView(item);
         }
-        file1.close();
-        addDataToTableView(line);
       }
-      file.close();
 }
 
+//Menu: File->Save
 void MainWindow::menu_save()
 {
     if ("" == m_currentFile)
@@ -129,35 +113,34 @@ void MainWindow::menu_save()
     }
     else
     {
-        QFile file(m_currentFile);
-        if ( file.open(QIODevice::ReadWrite) )
+        QModelIndex mi;
+        QVariant v;
+        std::vector<QString> lines;
+        for (int i=0; i<m_model->rowCount(); ++i)
         {
-            QTextStream stream( &file );
+            mi = m_model->index(i,m_modelFilePathColumnId);
+            v=mi.data();
 
-            QModelIndex mi;
-            QVariant v;
-            for (int i=0; i<m_model->rowCount(); ++i)
-            {
-                mi = m_model->index(i,m_modelFilePathColumnId);
-                v=mi.data();
-
-                stream<<v.toString() + "\n";
-            }
+            lines.push_back(v.toString());
         }
-        file.close();
+
+        m_fileOperations.writeFileLines(m_currentFile, lines);
     }
 }
 
+//Menu: File->Save As
 void MainWindow::menu_saveAs()
 {
     saveDialog();
 }
 
+//Menu: File->Exit
 void MainWindow::menu_exit()
 {
     this->close();
 }
 
+//Menu: Settings->Destination Path
 void MainWindow::menu_setDestination()
 {
     QString path = QFileDialog::getExistingDirectory(this,
@@ -174,27 +157,30 @@ void MainWindow::menu_setDestination()
     }
 }
 
+//Menu: Help->About
 void MainWindow::menu_about()
 {
     m_aboutWindow->show();
 }
 
+//"Add a file" button
 void MainWindow::on_addButton_clicked()
 {
-    QStringList l_path = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),m_fileDir, tr("Files (*)"));
-    if (0 == l_path.size())
+    QStringList pathList = QFileDialog::getOpenFileNames(this, tr("Add file(s)"),m_fileDir, tr("Files (*)"));
+    if (0 == pathList.size())
     {
         return;
     }
 
-    QString afld_tmp = m_fileDir = m_path.getDirectoryNameByPath(l_path[0]);
+    m_fileDir = m_path.getDirectoryNameByPath(pathList[0]);
 
-    for (int i=0; i<l_path.size(); ++i)
+    for (auto &item : pathList)
     {
-        addDataToTableView(l_path[i]);
+        addDataToTableView(item);
     }
 }
 
+//"Clear" button
 void MainWindow::on_removeButton_clicked()
 {
     //get selected rows
@@ -362,20 +348,17 @@ void MainWindow::saveDialog()
     QString file_name = QFileDialog::getSaveFileName(this, tr("Save list of file(s)"),"",tr("*.lef (*.lef)"));
 
     m_currentFile = file_name;
-    QFile file(file_name + ".lef");
-    if ( file.open(QIODevice::ReadWrite) )
+
+    QModelIndex mi;
+    QVariant v;
+    std::vector<QString> lines;
+    for (int i=0; i<m_model->rowCount(); ++i)
     {
-        QTextStream stream( &file );
+        mi = m_model->index(i,m_modelFilePathColumnId);
+        v=mi.data();
 
-        QModelIndex mi;
-        QVariant v;
-        for (int i=0; i<m_model->rowCount(); ++i)
-        {
-            mi = m_model->index(i,m_modelFilePathColumnId);
-            v=mi.data();
-
-            stream<<v.toString() + "\n";
-        }
+        lines.push_back(v.toString());
     }
-    file.close();
+
+    m_fileOperations.writeFileLines(file_name + ".lef", lines);
 }

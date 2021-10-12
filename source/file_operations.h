@@ -10,6 +10,7 @@ class FileOperations
 public:
     FileOperations();
 
+    bool                  isFileExist(const QString &fileName);
     QByteArray            readFile(const QString &filename);
     std::vector<QString>  readFileLines(const QString &fileName);
     bool                  writeFile (const QString &filename, const QByteArray &buffer);

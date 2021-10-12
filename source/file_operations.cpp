@@ -5,6 +5,18 @@ FileOperations::FileOperations()
 
 }
 
+bool  FileOperations::isFileExist(const QString &fileName)
+{
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly))
+    {
+          return false;
+    }
+    file.close();
+
+    return true;
+}
+
 std::vector<QString> FileOperations::readFileLines(const QString &fileName)
 {
     QFile file(fileName);

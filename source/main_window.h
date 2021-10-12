@@ -8,7 +8,6 @@
 #include <QDebug>
 #include <QDialog>
 #include <QDesktopWidget>
-#include <QFile>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMainWindow>
