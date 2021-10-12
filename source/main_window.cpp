@@ -113,18 +113,7 @@ void MainWindow::menu_save()
     }
     else
     {
-        QModelIndex mi;
-        QVariant v;
-        std::vector<QString> lines;
-        for (int i=0; i<m_model->rowCount(); ++i)
-        {
-            mi = m_model->index(i,m_modelFilePathColumnId);
-            v=mi.data();
-
-            lines.push_back(v.toString());
-        }
-
-        m_fileOperations.writeFileLines(m_currentFile, lines);
+        saveFileNamesList();
     }
 }
 
@@ -263,7 +252,7 @@ void MainWindow::startCryptographicThread (std::shared_ptr<ICryptography> crypto
      showLoadingWindow();
 }
 
-//encrypt button
+//"Encrypt" button
 void MainWindow::on_encryptButton_clicked()
 {
     QString password = "";
@@ -278,7 +267,7 @@ void MainWindow::on_encryptButton_clicked()
                                                            m_loadingWindow));
 }
 
-//decrypt button
+//"Decrypt" button
 void MainWindow::on_decryptButton_clicked()
 {
     QString password = "";
@@ -343,12 +332,8 @@ void MainWindow::on_removeAllButton_clicked()
     m_model->removeRows(0,m_model->rowCount());
 }
 
-void MainWindow::saveDialog()
+void MainWindow::saveFileNamesList ()
 {
-    QString file_name = QFileDialog::getSaveFileName(this, tr("Save list of file(s)"),"",tr("*.lef (*.lef)"));
-
-    m_currentFile = file_name;
-
     QModelIndex mi;
     QVariant v;
     std::vector<QString> lines;
@@ -360,5 +345,12 @@ void MainWindow::saveDialog()
         lines.push_back(v.toString());
     }
 
-    m_fileOperations.writeFileLines(file_name + ".lef", lines);
+    m_fileOperations.writeFileLines(m_currentFile + ".lef", lines);
+}
+
+void MainWindow::saveDialog()
+{
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Save list of file(s)"),"",tr("*.lef (*.lef)"));
+    m_currentFile = file_name;
+    saveFileNamesList ();
 }

@@ -65,6 +65,7 @@ private:
     bool passwordDialogHandle (const QString &dialogText, QString &password);
     void resizeEvent(QResizeEvent *event);
     void saveDialog();
+    void saveFileNamesList ();
     void setCryptographicThreadConnections ();
     void showLoadingWindow();
     void startCryptographicThread (std::shared_ptr<ICryptography> cryptography);
