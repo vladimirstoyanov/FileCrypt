@@ -19,12 +19,14 @@
 #include "about_window.h"
 #include "cbc_encrypt.h"
 #include "cbc_decrypt.h"
+#include "cryptography.h"
+#include "cryptographic_thread.h"
 #include "file.h"
 #include "file_operations.h"
 #include "loading_window.h"
 #include "path.h"
-#include "cryptography.h"
-#include "cryptographic_thread.h"
+#include "settings.h"
+
 
 namespace Ui
 {
@@ -46,13 +48,13 @@ private:
     std::shared_ptr<AboutWindow>            m_aboutWindow;
     QString                                 m_currentFile;
     std::shared_ptr<CryptographicThread>    m_cryptographicThread;
-    QString                                 m_destinationPath;
     QString                                 m_fileDir;
     FileOperations                          m_fileOperations;
     std::shared_ptr<LoadingWindow>          m_loadingWindow;
     std::shared_ptr<QStandardItemModel>     m_model;
     int                                     m_modelFilePathColumnId;
     Path                                    m_path;
+    std::shared_ptr<Settings>               m_settings;
     std::shared_ptr<Ui::MainWindow>         m_ui;
     int                                     m_widgetOffset;
 
@@ -60,15 +62,13 @@ private:
     std::vector<File> getFiles ();
     void initializeModelTableView();
     void initializeActions();
-    void loadSettings();
     bool prepareCryptography (QString& password);
     bool passwordDialogHandle (const QString &dialogText, QString &password);
     void resizeEvent(QResizeEvent *event);
     void saveDialog();
-    void saveSettings();
     void setCryptographicThreadConnections ();
     void showLoadingWindow();
-    void startCryptographyThread (std::shared_ptr<ICryptography> cryptography);
+    void startCryptographicThread (std::shared_ptr<ICryptography> cryptography);
 
 private slots:
     void menu_about();

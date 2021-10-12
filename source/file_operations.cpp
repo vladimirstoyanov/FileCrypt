@@ -5,6 +5,27 @@ FileOperations::FileOperations()
 
 }
 
+std::vector<QString> FileOperations::readFileLines(const QString &fileName)
+{
+    QFile file(fileName);
+    std::vector <QString> lines;
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        return lines;
+    }
+
+    QTextStream in(&file);
+    while (!in.atEnd())
+    {
+        lines.push_back( in.readLine());
+    }
+
+    file.close();
+
+    return lines;
+}
+
 QByteArray FileOperations::readFile (const QString &filename)
 {
     QByteArray buffer;
@@ -26,4 +47,19 @@ bool FileOperations::writeFile(const QString &filename, const QByteArray &buffer
     outFile.write(buffer);
     outFile.close();
     return true;
+}
+
+bool FileOperations::writeFileLines (const QString &filename, const std::vector<QString> &lines)
+{
+    QFile file( filename );
+    if ( file.open(QIODevice::ReadWrite) )
+    {
+        QTextStream stream( &file );
+
+        for (auto &item: lines)
+        {
+            stream<<item + "\n";
+        }
+    }
+    file.close();
 }

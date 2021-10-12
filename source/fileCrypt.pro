@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     loading_window.cpp \
     main_window.cpp \
     null_cryptography.cpp \
-    path.cpp
+    path.cpp \
+    settings.cpp
 
 HEADERS  += \
     about_window.h \
@@ -39,7 +40,8 @@ HEADERS  += \
     loading_window.h \
     main_window.h \
     null_cryptography.h \
-    path.h
+    path.h \
+    settings.h
 
 FORMS    += \
     about_window.ui \

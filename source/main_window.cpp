@@ -6,11 +6,11 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_aboutWindow             (std::make_shared <AboutWindow>())
     , m_currentFile             ("")
     , m_cryptographicThread      (std::make_shared<CryptographicThread> ())
-    , m_destinationPath         ("")
     , m_fileDir                 ("")
     , m_loadingWindow           (std::make_shared <LoadingWindow>())
     , m_model                   (std::make_shared<QStandardItemModel> (0,1,this))
     , m_modelFilePathColumnId   (0)
+    , m_settings                (std::make_shared<Settings> ())
     , m_ui                      (std::make_shared<Ui::MainWindow> ())
     , m_widgetOffset            (5)
 {
@@ -18,8 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
     initializeModelTableView();
     initializeActions();
-    initializeThread();
-    loadSettings();
+    setCryptographicThreadConnections();
 }
 
 MainWindow::~MainWindow()
@@ -163,16 +162,15 @@ void MainWindow::menu_setDestination()
 {
     QString path = QFileDialog::getExistingDirectory(this,
                                                      tr("Set A Directory"),
-                                                     m_destinationPath,
+                                                     m_settings->getDestinationPath(),
                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (path!="" && m_destinationPath.length()>0)
+    if (path!="" && path.length()>0)
     {
-        m_destinationPath = path;
-        if (m_destinationPath[m_destinationPath.length()-1] != "/")
+        if (path[path.length()-1] != "/")
         {
-            m_destinationPath+="/";
+            path+="/";
         }
-        saveSettings();
+        m_settings->setDestinationPath(path);
     }
 }
 
@@ -272,7 +270,7 @@ bool MainWindow::prepareCryptography (QString& password)
     return true;
 }
 
-void MainWindow::startCryptographyThread (std::shared_ptr<ICryptography> cryptography)
+void MainWindow::startCryptographicThread (std::shared_ptr<ICryptography> cryptography)
 {
      m_cryptographicThread->setCryptography(cryptography);
      m_cryptographicThread->start();
@@ -288,7 +286,10 @@ void MainWindow::on_encryptButton_clicked()
         return;
     }
 
-    startCryptographyThread(std::make_shared<CBCEncrypt> (getFiles(), m_destinationPath, password, m_loadingWindow));
+    startCryptographicThread(std::make_shared<CBCEncrypt> (getFiles(),
+                                                           m_settings->getDestinationPath(),
+                                                           password,
+                                                           m_loadingWindow));
 }
 
 //decrypt button
@@ -300,7 +301,10 @@ void MainWindow::on_decryptButton_clicked()
         return;
     }
 
-    startCryptographyThread(std::make_shared<CBCDecrypt> (getFiles(), m_destinationPath, password, m_loadingWindow));
+    startCryptographicThread(std::make_shared<CBCDecrypt> (getFiles(),
+                                                           m_settings->getDestinationPath(),
+                                                           password,
+                                                           m_loadingWindow));
 }
 
 //add data to tableView widget
@@ -327,54 +331,7 @@ void MainWindow::addDataToTableView(const QString &fileName)
     m_model->item(m_model->rowCount()-1,m_modelFilePathColumnId)->setEditable(false);
 }
 
-//ToDo: move the implementation to another class
-void MainWindow::loadSettings()
-{
-    QFile file("settings");
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        return;
-    }
 
-    QTextStream in(&file);
-
-    if (in.atEnd())
-    {
-        file.close();
-        return;
-    }
-    QString line = in.readLine();
-    line.contains("dist_path:");
-    QStringList sl = line.split(":");
-    if (sl.size()<2)
-    {
-        file.close();
-        return;
-    }
-    if (sl.at(0) != "dist_path")
-    {
-        file.close();
-        return;
-    }
-    m_destinationPath = sl.at(1);
-
-    m_destinationPath = m_destinationPath.replace("\n","");
-
-    file.close();
-}
-
-//ToDo: move the implementation to another class
-void MainWindow::saveSettings()
-{
-    QFile file( "settings" );
-    if ( file.open(QIODevice::ReadWrite) )
-    {
-        QTextStream stream( &file );
-
-        stream<<"dist_path:" + m_destinationPath + "\n";
-    }
-    file.close();
-}
 
 void MainWindow::showLoadingWindow()
 {
