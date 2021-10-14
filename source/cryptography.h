@@ -1,10 +1,6 @@
 #ifndef CRYPTOGRAPHY_H
 #define CRYPTOGRAPHY_H
 
-#include <vector>
-
-#include "file.h"
-
 class ICryptography
 {
 public:

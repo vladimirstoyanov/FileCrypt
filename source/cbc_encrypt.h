@@ -3,6 +3,7 @@
 
 #include "aes.h"
 #include "cryptography.h"
+#include "file.h"
 #include "file_operations.h"
 #include "loading_window.h"
 
