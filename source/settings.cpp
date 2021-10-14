@@ -17,7 +17,7 @@ void Settings::loadSettings()
     FileOperations fileOperations;
     std::vector<QString> lines = fileOperations.readFileLines (m_settingsFileName);
 
-    if (0 == lines.size())
+    if (lines.empty())
     {
         return;
     }
