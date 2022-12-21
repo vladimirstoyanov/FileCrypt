@@ -3,7 +3,7 @@
 if [ $# -ne 1 ]
 then
   echo "Wrong input! please use the following input: "
-        echo "1 arg - comment"
+        echo "1 arg - a comment"
   exit 1
 fi
 
