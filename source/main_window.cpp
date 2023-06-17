@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     , m_widgetOffset            (5)
 {
     m_ui->setupUi(this);
-    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
+    this->move(this->screen()->availableGeometry().center()  - this->rect().center());
     initializeModelTableView();
     initializeActions();
     setCryptographicThreadConnections();
@@ -175,7 +175,7 @@ void MainWindow::on_removeButton_clicked()
     //get selected rows
     QModelIndexList indexes = m_ui->tableView->selectionModel()->selectedRows();
 
-    qSort(indexes.begin(), indexes.end());
+    std::sort(indexes.begin(), indexes.end());
 
     //remove the tableView's last index
     while (!indexes.isEmpty())

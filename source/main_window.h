@@ -12,6 +12,7 @@
 #include <QInputDialog>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QScreen>
 #include <QStandardItemModel>
 #include <QStringList>
 

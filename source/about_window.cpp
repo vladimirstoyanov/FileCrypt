@@ -28,7 +28,7 @@ void AboutWindow::setupGui ()
 {
     ui->setupUi(this);
 
-    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
+    this->move(this->screen()->availableGeometry().center() - this->rect().center());
 
     ui->textBrowser->setGeometry(0,0,this->width(), this->height());
 

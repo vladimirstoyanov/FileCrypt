@@ -63,6 +63,7 @@ bool FileOperations::writeFile(const QString &filename, const QByteArray &buffer
 
 bool FileOperations::writeFileLines (const QString &filename, const std::vector<QString> &lines)
 {
+    bool result = false;
     QFile file( filename );
     if ( file.open(QIODevice::ReadWrite) )
     {
@@ -72,6 +73,9 @@ bool FileOperations::writeFileLines (const QString &filename, const std::vector<
         {
             stream<<item + "\n";
         }
+
+        result=true;
     }
     file.close();
+    return result;
 }

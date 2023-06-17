@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDesktopWidget>
+#include <QScreen>
 #include <QShowEvent>
 #include <QWidget>
 

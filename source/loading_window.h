@@ -8,6 +8,7 @@
 #include <QDesktopWidget>
 #include <QLabel>
 #include <QMovie>
+#include <QScreen>
 #include <QPainter>
 #include <QPen>
 #include <QWidget>

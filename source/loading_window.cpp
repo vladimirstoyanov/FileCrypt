@@ -27,6 +27,7 @@ void LoadingWindow::setCurrentFile (const QString & currentFile)
 
 void LoadingWindow::paintEvent( QPaintEvent* e )
 {
+    Q_UNUSED(e);
     QPainter painter(this);
     QPen linepen(Qt::black);
     linepen.setCapStyle(Qt::RoundCap);
@@ -51,7 +52,7 @@ void LoadingWindow::initializeWidgets ()
     setWindowFlags( Qt::CustomizeWindowHint );
     setWindowFlags(windowFlags() | Qt::Tool);
 
-    this->move(QApplication::desktop()->screen()->rect().center() - this->rect().center());
+    this->move(this->screen()->availableGeometry().center() - this->rect().center());
 
     m_filenameLabel->setGeometry(m_widgetOffset,
                                  this->height()*m_filenameLabelHeightRatio,
